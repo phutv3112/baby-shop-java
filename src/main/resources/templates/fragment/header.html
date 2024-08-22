@@ -1,0 +1,27 @@
+<th:block th:fragment="header">
+    <style>
+        /* Căn chỉnh container chứa icon và nút đăng xuất ra giữa màn hình */
+        .center-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center; /* Căn giữa nội dung bên trong container */
+        }
+
+        /* Căn chỉnh và thay đổi kích cỡ icon */
+        .header-icon.account-setting {
+            font-size: 48px; /* Tăng kích cỡ biểu tượng */
+            color: #000; /* Màu của biểu tượng */
+            display: block; /* Đảm bảo icon là block-level element để căn giữa */
+            margin-bottom: 20px; /* Khoảng cách dưới icon để có chỗ cho nút đăng xuất */
+        }
+
+    </style>
+
+    <div class="center-container">
+        <a href="" data-toggle="modal" data-target="#exampleModal" class="header-icon account-setting"><i class="icon-user-2"></i></a>
+
+    </div>
+    <script></script>
+</th:block>

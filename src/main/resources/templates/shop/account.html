@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{/layout/layout :: main-fragment(
+                                                                     ~{:: title},
+                                                                    'header',
+                                                                    'footer',
+                                                                     ~{:: #css-resources},
+                                                                     ~{:: #js-resources},
+                                                                     ~{:: #main-content}
+                                                                    )}">
+<head>
+    <meta charset="UTF-8">
+    <title>Thông tin tài khoản</title>
+    <th:block id="css-resources">
+        <link rel="stylesheet" th:href="@{/shop/css/custom.css}">
+    </th:block>
+</head>
+<body>
+<main id="main-content" class="container">
+    <div class="row">
+        <div class="col-lg-3">
+            <div class="left-sidebar">
+                <div class="header">
+                    <div class="avatar"><img class="img-fluid" th:src="@{/shop/images/avatar/avatar7.png}" alt="avatar"/></div>
+                    <div class="user-info">
+                        <div class="user-name" style="color: black;" th:text="${user_fullname}"></div>
+                    </div>
+                </div>
+                <div class="break-line"></div>
+                <div class="nav-sidebar">
+                    <style>
+                        .account.nav-item, .buying-order.nav-item{
+                            border: 1px solid #000; /* Đặt khung dày 2px màu đen */
+                            padding: 5px; /* Thêm khoảng đệm xung quanh nội dung */
+                            border-radius: 5px; /* Bo tròn các góc của khung */
+                            color: black;
+                            display: inline-block;
+                            align-items: center; /* Căn giữa theo chiều dọc */
+                            justify-content: center; /* Căn giữa theo chiều ngang */
+                            text-align: center;
+
+                        }
+                        .account.nav-item:hover{
+                            background-color: aqua;
+                        }
+                        .buying-order.nav-item:hover{
+                            background-color: aqua;
+                        }
+                    </style>
+                    <a class="account nav-item" href="/tai-khoan">Quản lý tài khoản</a>
+                    <a class="buying-order nav-item" href="/tai-khoan/lich-su-giao-dich">Quản lý đơn hàng</a>
+                    <style>
+                        .btn-primary.red-btn.sign-out-btn{
+                           border-radius: 10px;
+                        }
+                        .btn-primary.red-btn.sign-out-btn:hover{
+                            background-color: red;
+                        }
+                    </style>
+                </div>
+            </div>
+            <a class="btn btn-primary red-btn sign-out-btn" style="margin-left: 50px; margin-top: -20px;" href="/api/logout">Đăng xuất</a>
+        </div>
+        <div class="col-lg-9 main-content-wrapper">
+            <div class="main-content">
+                <h1 class="account-title">Thông tin tài khoản</h1>
+                <div class="tab-content" id="pills-tabContent">
+                    <div class="tab-pane fade show active" id="profile-setting" role="tabpanel" aria-labelledby="profile-setting-tab">
+                        <form class="setting-box">
+                            <div class="full-name item-row col-md-10">
+                                <div class="text required-label">Họ tên</div>
+                                <div>
+                                    <input style="border-radius: 10px;" class="form-control" th:value="${user_fullname}" id="in-user-fullname"/>
+                                    <div class="invalid-feedback"></div>
+                                </div>
+                            </div>
+                            <div class="email item-row col-md-10">
+                                <div class="text required-label">Email</div>
+                                <input style="border-radius: 10px;" class="form-control" disabled="disabled" th:value="${user_email}"/>
+                            </div>
+                            <div class="password item-row col-md-10">
+                                <div class="text required-label">Mật khẩu</div>
+                                <div class="password-wrapper">
+                                    <input style="border-radius: 10px;" class="form-control" type="password" disabled="disabled" autocomplete="autocomplete" value="******"/>
+                                    <style>
+                                        .change-password.text-btn:hover{
+                                            color: red;
+                                        }
+                                    </style>
+                                    <a class="change-password text-btn" href="" data-toggle="modal" data-target="#changePassword">Đổi mật khẩu</a>
+                                </div>
+                            </div>
+                            <div class="phone item-row col-md-10">
+                                <div class="text required-label">Số điện thoại</div>
+                                <div>
+                                    <input style="border-radius: 10px;" class="form-control" th:value="${user_phone}" id="in-user-phone"/>
+                                    <div class="invalid-feedback"></div>
+                                </div>
+                            </div>
+                            <div class="address item-row col-md-10">
+                                <div class="text">Địa chỉ</div>
+                                <div>
+                                    <textarea style="border-radius: 10px;" class="form-control" rows="5" th:text="${user_address}" id="in-user-address"></textarea>
+                                </div>
+                            </div>
+                            <div class="update-btn-wrapper item-row col-md-10">
+                                <div class="btn btn-primary red-btn update-btn" style="border-radius: 10px; margin-left: 70px;">Cập nhật</div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="zalo-button">
+        <a href="https://zalo.me/0365454643">
+            <img th:src="@{/shop/images/zalo3.png}" alt="Zalo">
+        </a>
+    </div>
+    <div class="call-button">
+        <a href="tel:0365454643">
+            <img th:src="@{/shop/images/dienthoai.jpg}" alt="hotline">
+        </a>
+    </div>
+    <style>
+
+        .zalo-button {
+            position: fixed;
+            bottom: 80px;
+            left: 20px;
+            cursor: pointer;
+            z-index: 999;
+            overflow: hidden; /* Ngăn chặn đường viền che khuất nút */
+        }
+        .zalo-button::before {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid rgba(0, 123, 255, 0.7);
+            animation: pulse 1s infinite;
+            box-sizing: border-box;
+            pointer-events: none; /* Cho phép sự kiện nhấp vào liên kết đi qua */
+        }
+
+        .zalo-button img {
+            width: 70px;
+            height: auto;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            position: relative; /* Đảm bảo hình ảnh nằm trên đỉnh của đường viền */
+            z-index: 1; /* Đảm bảo hình ảnh nằm trên đỉnh của đường viền */
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(0.9);
+                opacity: 0.7;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(0.9);
+                opacity: 0.7;
+            }
+        }
+
+        .call-button {
+            position: fixed;
+            bottom: 5px;
+            left: 25px;
+            cursor: pointer;
+            z-index: 999;
+            overflow: hidden; /* Ngăn chặn đường viền che khuất nút */
+        }
+        .call-button::before {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid red;
+            animation: pulse 1s infinite;
+            box-sizing: border-box;
+            pointer-events: none; /* Cho phép sự kiện nhấp vào liên kết đi qua */
+        }
+
+        .call-button img {
+            width: 60px;
+            height: auto;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            position: relative; /* Đảm bảo hình ảnh nằm trên đỉnh của đường viền */
+            z-index: 1; /* Đảm bảo hình ảnh nằm trên đỉnh của đường viền */
+        }
+
+    </style>
+    <!-- Modal change password -->
+    <div class="modal fade" id="changePassword" tabindex="-1" role="dialog" aria-labelledby="changePasswordLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="changePasswordLabel">Đổi mật khẩu</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="current-password item-row">
+                        <div class="text required-label">Mật khẩu cũ</div>
+                        <div class="password-wrapper-in">
+                            <input class="form-control" type="password" autocomplete="autocomplete" id="old-password"/>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                    </div>
+                    <div class="new-password item-row">
+                        <div class="text required-label">Mật khẩu mới</div>
+                        <div class="password-wrapper-in">
+                            <input class="form-control" type="password" autocomplete="autocomplete" id="new-password"/>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                    </div>
+                    <div class="new-password-confirm item-row">
+                        <div class="text required-label">Nhập lại mật khẩu mới</div>
+                        <div class="password-wrapper-in">
+                            <input class="form-control" type="password" autocomplete="autocomplete" id="retype-password"/>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" type="button" data-dismiss="modal">Huỷ bỏ</button>
+                    <button class="btn btn-primary red-btn btn-confirm-change-password" type="button">Lưu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<th:block id="js-resources">
+    <script th:inline="javascript">
+        $('.btn-confirm-change-password').click(function() {
+            let oldPassword = $('#old-password').val();
+            let newPassword = $('#new-password').val();
+            let retypePassword = $('#retype-password').val();
+            let isValid = true;
+
+            if (oldPassword.length < 4 || oldPassword.length > 20) {
+                oldPasswordInvalid = $('#old-password').next();
+                oldPasswordInvalid.css('display', 'block');
+                oldPasswordInvalid.html('Độ dài mật khẩu cũ từ 4 - 20 ký tự');
+                isValid = false;
+            }
+
+            if (newPassword.length < 4 || newPassword.length > 20) {
+                newPasswordInvalid = $('#new-password').next();
+                newPasswordInvalid.css('display', 'block');
+                newPasswordInvalid.html('Độ dài mật khẩu mới từ 4 - 20 ký tự');
+                isValid = false;
+            }
+
+            if (retypePassword.length < 4 || newPassword.length > 20) {
+                retypePasswordInvalid = $('#retype-password').next();
+                retypePasswordInvalid.css('display', 'block');
+                retypePasswordInvalid.html('Độ dài xác thực mật khẩu từ 4 - 20 ký tự');
+                isValid = false;
+            } else if (newPassword !== retypePassword) {
+                retypePasswordInvalid = $('#retype-password').next();
+                retypePasswordInvalid.css('display', 'block');
+                retypePasswordInvalid.html('Mật khẩu mới và xác nhận mật khẩu không giống nhau');
+                isValid = false;
+            }
+
+            if (isValid) {
+                req = {
+                    old_password: oldPassword,
+                    new_password: newPassword
+                }
+                var myJSON = JSON.stringify(req);
+                $.ajax({
+                    url: '/api/change-password',
+                    type: 'POST',
+                    data: myJSON,
+                    contentType: "application/json; charset=utf-8",
+                    success: function(data) {
+                        toastr.success("Đổi mật khẩu thành công");
+                        clearInputChangePassword();
+                        $('.modal').modal('hide');
+                        formatMoney();
+                    },
+                    error: function(data) {
+                        toastr.warning(data.responseJSON.message);
+                    },
+                });
+            }
+        })
+
+        function clearInputChangePassword() {
+            $('#old-password').val('');
+            $('#old-password').next().hide();
+            $('#new-password').val('');
+            $('#new-password').next().hide();
+            $('#retype-password').val('');
+            $('#retype-password').next().hide();
+        }
+
+        $("#changePassword").on("hidden.bs.modal", function () {
+            clearInputChangePassword();
+        });
+
+        $('.update-btn').click(function() {
+            let phoneValue = $("#in-user-phone").val();
+            let fullNameValue = $("#in-user-fullname").val();
+            let addressValue = $('#in-user-address').val();
+            let isValid = true;
+
+            let phoneFormat = new RegExp(/((09|03|07|08|05)+([0-9]{8})\b)/g);
+            if (phoneValue == "") {
+                phoneInvalid = $("#in-user-phone").next();
+                phoneInvalid.css('display', 'block');
+                phoneInvalid.html('Vui lòng nhập số điện thoại');
+                isValid = false;
+            } else if (!phoneFormat.test(phoneValue)) {
+                phoneInvalid = $("#in-user-phone").next();
+                phoneInvalid.css('display', 'block');
+                phoneInvalid.html('Số điện thoại không hợp lệ');
+                isValid = false;
+            }
+
+            if (fullNameValue == "") {
+                fullNameInvalid = $("#in-user-fullname").next();
+                fullNameInvalid.css('display', 'block');
+                fullNameInvalid.html('Vui lòng nhập họ tên');
+                isValid = false;
+            }
+
+            if (isValid) {
+                req = {
+                    phone: phoneValue,
+                    full_name: fullNameValue,
+                    address: addressValue
+                }
+                var myJSON = JSON.stringify(req);
+                $.ajax({
+                    url: '/api/update-profile',
+                    type: 'PUT',
+                    data: myJSON,
+                    contentType: "application/json; charset=utf-8",
+                    success: function(data) {
+                        signedValidate(true, fullNameValue);
+                        toastr.success("Cập nhật profile thành công");
+                    },
+                    error: function(data) {
+                        toastr.warning(data.responseJSON.message);
+                    },
+                    complete: function() {
+                        $("#in-user-fullname").next().hide();
+                        $("#in-user-phone").next().hide();
+                    }
+                });
+            }
+        })
+    </script>
+</th:block>
+</body>
+</html>

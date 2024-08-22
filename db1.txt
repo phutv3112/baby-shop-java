@@ -1,0 +1,21 @@
+
+- get theo status cho người dùng : http://localhost:9999/api/orders?buyer=3&status=1 với buyer với status là cái em truyền vào nhé
+- chi tiet don hang(theo bill code vừa trả ở api trên): http://localhost:9999/api/orders/detail?billCode=3e37cdf8-9b0b-4cfa-9321-a3e5f5bfd16f
+- sửa status (update theo billCode vừa lấy owr trên):
+
+curl --location 'http://localhost:9999/api/update/status?billCode=3e37cdf8-9b0b-4cfa-9321-a3e5f5bfd16f&userId=1' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: JWT_TOKEN=eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0aGFvdHJhbmdAZ21haWwuY29tIiwiZXhwIjoxNzIzOTU2Njg4LCJpYXQiOjE3MjMzNTE4ODh9.azSoewQKnWZfG153XpQ1S1UEq-nkBPrJozgVAnyGksMkZGocyDjHkmLaDcnsT8vLtvhk9m1Y_HNCflhrH6uVYA' \
+--data '{
+    "receiverName":"Le Tien Thanh",
+    "receiverPhone":"0912022813",
+    "receiverAddress":"Số 123 phạm Ngọc Thạch",
+    "note":"abcasdas",
+    "status":2
+}'
+
+
+- api get ra full đơn hàng theo status cho admin :http://localhost:9999/api/orders/status?status=2 
+
+
+- xóa đơn hang: Có cần khum

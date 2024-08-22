@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{/layout/layout :: main-fragment(
+                                                                     ~{:: title},
+                                                                    'header',
+                                                                    'footer',
+                                                                     ~{:: #css-resources},
+                                                                     ~{:: #js-resources},
+                                                                     ~{:: #main-content}
+                                                                    )}">
+<head>
+    <meta charset="UTF-8">
+    <title>Tin tức</title>
+    <th:block id="css-resources">
+        <link rel="stylesheet" th:href="@{/adminlte/pagination/simplePagination.css}">
+    </th:block>
+</head>
+<body>
+<main class="main" id="main-content">
+    <nav aria-label="breadcrumb" class="breadcrumb-nav">
+        <div class="container">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="index-2.html"><i class="icon-home"></i></a></li>
+                <li class="breadcrumb-item active" aria-current="page">Tin tức</li>
+            </ol>
+        </div>
+        <!-- End .container -->
+    </nav>
+    <div class="zalo-button">
+        <a href="https://zalo.me/0365454643">
+            <img th:src="@{/shop/images/zalo3.png}" alt="Zalo">
+        </a>
+    </div>
+    <div class="call-button">
+        <a href="tel:0365454643">
+            <img th:src="@{/shop/images/dienthoai.jpg}" alt="hotline">
+        </a>
+    </div>
+    <style>
+
+        .zalo-button {
+            position: fixed;
+            bottom: 80px;
+            left: 20px;
+            cursor: pointer;
+            z-index: 999;
+            overflow: hidden; /* Ngăn chặn đường viền che khuất nút */
+        }
+        .zalo-button::before {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid rgba(0, 123, 255, 0.7);
+            animation: pulse 1s infinite;
+            box-sizing: border-box;
+            pointer-events: none; /* Cho phép sự kiện nhấp vào liên kết đi qua */
+        }
+
+        .zalo-button img {
+            width: 70px;
+            height: auto;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            position: relative; /* Đảm bảo hình ảnh nằm trên đỉnh của đường viền */
+            z-index: 1; /* Đảm bảo hình ảnh nằm trên đỉnh của đường viền */
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(0.9);
+                opacity: 0.7;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(0.9);
+                opacity: 0.7;
+            }
+        }
+
+        .call-button {
+            position: fixed;
+            bottom: 5px;
+            left: 25px;
+            cursor: pointer;
+            z-index: 999;
+            overflow: hidden; /* Ngăn chặn đường viền che khuất nút */
+        }
+        .call-button::before {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid red;
+            animation: pulse 1s infinite;
+            box-sizing: border-box;
+            pointer-events: none; /* Cho phép sự kiện nhấp vào liên kết đi qua */
+        }
+
+        .call-button img {
+            width: 60px;
+            height: auto;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            position: relative; /* Đảm bảo hình ảnh nằm trên đỉnh của đường viền */
+            z-index: 1; /* Đảm bảo hình ảnh nằm trên đỉnh của đường viền */
+        }
+
+    </style>
+    <div class="container">
+        <form method="GET" id="search-form">
+            <div class="row">
+            <div class="col-lg-12">
+                <th:block th:each="post : ${posts}">
+                    <article class="post">
+                        <div class="post-media">
+                            <a th:href="@{/tin-tuc/{slug}/{id}(id=${post.id},slug=${post.slug})}">
+                                <img th:src="@{${post.thumbnail}}" th:alt="${post.title}">
+                            </a>
+                        </div>
+                        <!-- End .post-media -->
+
+                        <div class="post-body">
+                            <div class="post-date">
+                                <span class="month" th:text="${#dates.format(post.publishedAt, 'MM yyyy')}"></span></p>
+                            </div>
+                            <!-- End .post-date -->
+
+                            <h2 class="post-title">
+                                <a th:href="@{/tin-tuc/{slug}/{id}(id=${post.id},slug=${post.slug})}" th:text="${post.title}"></a>
+                            </h2>
+
+                            <div class="post-content">
+                                <p th:utext="${post.content}"></p>
+
+                                <a th:href="@{/tin-tuc/{slug}/{id}(id=${post.id},slug=${post.slug})}" class="read-more">Read More <i
+                                        class="icon-angle-double-right"></i></a>
+                            </div>
+                            <!-- End .post-content -->
+
+                            <div class="post-meta">
+                                <i class="icon-calendar"></i><span th:text="${#dates.format(post.publishedAt, 'dd-MM-yyyy')}"></span>
+                                <span><i class="icon-user"></i>By <a th:text="${post.createdBy.fullName}"></a></span>
+                            </div>
+                            <!-- End .post-meta -->
+                        </div>
+                        <!-- End .post-body -->
+                    </article>
+                    <!-- End .post -->
+                </th:block>
+
+                <!-- Pagination -->
+                <nav aria-label="Page navigation">
+                    <ul class="pagination" id="pagination"></ul>
+                </nav>
+            </div>
+            <!-- End .col-lg-9 -->
+        </div>
+            <input type="hidden" name="page" id="page">
+        </form>
+        <!-- End .row -->
+    </div>
+    <!-- End .container -->
+</main>
+<!-- End .main -->
+
+
+<th:block id="js-resources">
+    <script type="text/javascript" th:src="@{/adminlte/pagination/jquery.simplePagination.js}"></script>
+    <script type="text/javascript" th:src="@{/adminlte/js/table.js}"></script>
+    <script th:inline="javascript">
+        let page;
+        $(function (){
+            let vars = parseUrl();
+            page = vars["page"] || "1"
+            $('#page').val(page)
+            pagination([[${totalPages}]], [[${currentPage}]]);
+        })
+    </script>
+</th:block>
+</body>
+</html>

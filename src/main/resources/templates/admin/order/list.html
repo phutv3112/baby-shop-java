@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{/layout/layout_admin :: main-fragment(
+                                                ~{:: title},
+                                                'header',
+                                                'sidebar',
+                                                ~{:: #css-resources},
+                                                ~{:: #js-resources},
+                                                ~{:: #main-content}
+                                               )}">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách đơn hàng</title>
+    <th:block id="css-resources">
+        <link rel="stylesheet" th:href="@{/adminlte/pagination/simplePagination.css}">
+        <style>
+            .status-column.active {
+                background-color: #d9edf7; /* Màu nền khi cột được chọn */
+            }
+            .order-detail {
+                cursor: pointer; /* Con trỏ chuột như link */
+            }
+            .detail-table {
+                margin-top: 20px;
+            }
+            .close-detail {
+                color: red;
+                cursor: pointer;
+                font-weight: bold;
+                text-decoration: none;
+                font-size: 18px;
+                display: inline-block;
+                margin-left: 10px;
+                float: right; /* Đưa nút X sang bên phải */
+            }
+            .detail-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 10px; /* Khoảng cách dưới tiêu đề */
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+<section role="main" class="content-body" id="main-content">
+    <header class="page-header">
+        <div class="right-wrapper text-right">
+            <ol class="breadcrumbs">
+                <li>
+                    <a href="">
+                        <i class="bx bx-home-alt"></i>
+                    </a>
+                </li>
+                <li><span>Danh sách đơn hàng</span></li>
+            </ol>
+            <a class="sidebar-right-toggle" data-open="sidebar-right"><i
+                    class="fas fa-chevron-left"></i></a>
+        </div>
+    </header>
+
+    <section class="card">
+        <header class="card-header">
+            <div class="card-actions">
+                <a href="#" class="card-action card-action-toggle" data-card-toggle></a>
+                <a href="#" class="card-action card-action-dismiss" data-card-dismiss></a>
+            </div>
+            <h2 class="card-title">Danh sách đơn hàng</h2>
+        </header>
+        <section class="card">
+            <!--            <header class="card-header">-->
+            <!--                <h2 class="card-title">Chi tiết trạng thái đơn hàng</h2>-->
+            <!--            </header>-->
+            <div class="card-body">
+                <table class="table table-bordered table-striped mb-0">
+                    <thead>
+                    <tr>
+                        <th class="status-column" data-status="1">Chờ lấy hàng</th>
+                        <th class="status-column" data-status="2">Đang giao hàng</th>
+                        <th class="status-column" data-status="3">Đã giao hàng</th>
+                        <th class="status-column" data-status="4">Đơn hàng bị trả</th>
+                        <th class="status-column" data-status="5">Đơn hàng bị hủy</th>
+                    </tr>
+                    </thead>
+                    <tbody id="order-details">
+                    <!-- Nội dung đơn hàng và bảng phụ sẽ được thêm vào đây -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </section>
+</section>
+
+<th:block id="js-resources">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script th:inline="javascript">
+        $(document).ready(function () {
+            $('.status-column').on('click', function () {
+                let status = $(this).data('status');
+                let apiUrl = `http://localhost:9999/api/orders/status?status=${status}`;
+
+                // Xóa lớp active khỏi tất cả các cột
+                $('.status-column').removeClass('active');
+
+                // Thêm lớp active vào cột đã nhấp
+                $(this).addClass('active');
+
+                $.ajax({
+                    url: apiUrl,
+                    method: 'GET',
+                    success: function (data) {
+                        let orderDetails = $('#order-details');
+                        orderDetails.empty(); // Xóa nội dung cũ
+
+                        // Kiểm tra dữ liệu trả về có rỗng không
+                        if (data.length === 0) {
+                            orderDetails.append('<tr><td colspan="6">Không có đơn hàng nào</td></tr>');
+                            return;
+                        }
+
+                        // Loại bỏ các bản ghi trùng lặp theo billCode
+                        let uniqueOrders = {};
+                        data.forEach(order => {
+                            if (!uniqueOrders[order.billCode]) {
+                                uniqueOrders[order.billCode] = order;
+                            }
+                        });
+
+                        // Chuyển đổi đối tượng thành mảng
+                        let uniqueOrdersArray = Object.values(uniqueOrders);
+
+                        // Tạo bảng phụ chỉ với các cột thứ tự, billCode, quantity, totalPrice
+                        let tableHead = `
+                            <tr>
+                                <th>STT</th>
+                                <th>Mã đơn hàng</th>
+                                <th>Số lượng</th>
+                                <th>Tổng giá</th>
+                            </tr>
+                        `;
+
+                        let tableBody = uniqueOrdersArray.map((order, index) => `
+                            <tr>
+                                <td style="color:red;" class="order-detail" data-billcode="${order.billCode}" data-totalprice="${order.totalPrice}">${index + 1}</td>
+                                <td>${order.billCode || ''}</td>
+                                <td>${order.quantity || ''}</td>
+                                <td>${order.totalPrice || ''}</td>
+                            </tr>
+                        `).join('');
+
+                        orderDetails.append(`
+                            <tr>
+                                <td colspan="6">
+                                    <table class="table table-bordered table-striped mb-0 detail-table">
+                                        <thead>
+                                            ${tableHead}
+                                        </thead>
+                                        <tbody>
+                                            ${tableBody}
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        `);
+                    },
+                    error: function (error) {
+                        console.error('Error fetching order data:', error);
+                        alert('Đã có lỗi xảy ra khi lấy dữ liệu đơn hàng.');
+                    }
+                });
+            });
+
+            // Sự kiện click vào cột STT để lấy chi tiết đơn hàng
+            $(document).on('click', '.order-detail', function () {
+                let billCode = $(this).data('billcode');
+                let totalPrice = $(this).data('totalprice');
+                let apiUrl = `http://localhost:9999/api/orders/detail?billCode=${billCode}`;
+                //$('.detail-container').removeClass('show');
+                $('.detail-container').remove();
+                // Xóa các chi tiết cũ nếu có
+                //$('#order-details').find('.detail-container').remove();
+                $.ajax({
+                    url: apiUrl,
+                    method: 'GET',
+                    success: function (data) {
+                        let productApiUrl = 'http://localhost:9999/api/product/';
+                        let detailTable = `
+                            <table class="table table-bordered table-striped mb-0 detail-table">
+                                <thead>
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>Tên sản phẩm</th>
+                                        <th>Số lượng</th>
+                                        <th>Giá</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                        `;
+
+                        // Tạo một mảng để lưu các yêu cầu API cho tên sản phẩm
+                        let productRequests = [];
+
+                        let index = 1
+                        data.forEach((item) => {
+                            productRequests.push(
+                                $.ajax({
+                                    url: productApiUrl + item.productId,
+                                    method: 'GET',
+                                    success: function (productData) {
+                                        detailTable += `
+                                            <tr>
+                                                <td>${index ++}</td>
+                                                <td>${productData.name || ''}</td>
+                                                <td>${item.quantity || ''}</td>
+                                                <td>${productData.prices || ''}</td>
+                                            </tr>
+                                        `;
+                                    },
+                                    error: function (error) {
+                                        console.error('Error fetching product data:', error);
+                                        detailTable += `
+                                            <tr>
+                                                <td colspan="7">Lỗi khi lấy tên sản phẩm.</td>
+                                            </tr>
+                                        `;
+                                    }
+                                })
+                            );
+                        });
+
+                        // Khi tất cả các yêu cầu API hoàn tất
+                        $.when.apply($, productRequests).then(function () {
+                            detailTable += `</tbody></table>`;
+                            // Thêm bảng chi tiết vào nội dung
+                            $('#order-details').append(`
+                                <tr class = "detail-container">
+                                    <td colspan="6">
+                                        <div class="detail-header">
+                                            <h4>Chi tiết đơn hàng</h4>
+                                           <a class="edit-order-status" href="javascript:void(0)" style="color: red;">Sửa chi tiết đơn hàng</a>
+                                            <span class="close-detail">X</span>
+                                        </div>
+                                        <div id="current-billcode" style="margin-top: 10px;">Bill Code: ${billCode}</div>
+                                        <div id="receiver-name" style="margin-top: 10px;"></div>
+                                        <div id="receiver-phone" style="margin-top: 10px;"></div>
+                                        <div id="receiver-address" style="margin-top: 10px;"></div>
+                                        <div id="note" style="margin-top: 10px;"></div>
+                                        <div id="totalprices" style="margin-top: 10px;">Total Prices: ${totalPrice}</div> <!-- Hiển thị giá tổng -->
+                                        ${detailTable}
+                                    </td>
+                                </tr>
+                            `);
+
+                            // Hiển thị mã billCode hiện tại
+                            $('#current-billcode').text(`Mã đơn hàng: ${billCode}`);
+
+                            // Hiển thị thông tin nhận hàng
+                            $('#receiver-name').text(`Người nhận: ${data[0].receiverName || ''}`);
+                            $('#receiver-phone').text(`Số điện thoại: ${data[0].receiverPhone || ''}`);
+                            $('#receiver-address').text(`Địa chỉ: ${data[0].receiverAddress || ''}`);
+                            $('#note').text(`Ghi chú: ${data[0].note || ''}`);
+                            $('#totalprices').text(`Tổng tiền: ${totalPrice}`);
+                        });
+                    },
+                    error: function (error) {
+                        console.error('Error fetching order detail data:', error);
+                        alert('Đã có lỗi xảy ra khi lấy dữ liệu chi tiết đơn hàng.');
+                    }
+                });
+            });
+
+
+            $(document).on('click', '.edit-order-status', function () {
+                // Hiển thị dropdown chứa trạng thái đơn hàng
+                let statusDropdown = `
+        <div id="status-dropdown-container">
+            <select id="order-status-select">
+                <option value="1">Chờ lấy hàng</option>
+                <option value="2">Đang giao hàng</option>
+                <option value="3">Đã giao hàng</option>
+                <option value="4">Đơn hàng bị trả</option>
+                <option value="5">Đơn hàng bị hủy</option>
+            </select>
+            <button id="update-order-status">Cập nhật</button>
+        </div>
+    `;
+
+                // Thêm dropdown vào chi tiết đơn hàng
+                $(this).after(statusDropdown);
+
+                // Xử lý khi nhấn vào nút "Cập nhật"
+                $('#update-order-status').on('click', function () {
+                    // Lấy giá trị billCode từ chi tiết đơn hàng
+                    let billCode = $('#current-billcode').text().split(": ")[1]; // Lấy mã đơn hàng
+
+                    // Lấy giá trị trạng thái từ dropdown
+                    let selectedStatus = $('#order-status-select').val();
+
+                    // Gọi API để cập nhật trạng thái đơn hàng
+                    let updateApiUrl = `http://localhost:9999/api/update/status`;
+                    $.ajax({
+                        url: updateApiUrl,
+                        method: 'POST',
+                        data: {
+                            billCode: billCode,
+                            status: selectedStatus
+                        },
+                        success: function () {
+                            alert('Trạng thái đơn hàng đã được cập nhật.');
+                            location.reload();
+                            // Xóa dropdown sau khi cập nhật thành công
+                            $('#status-dropdown-container').remove();
+                        },
+                        error: function (error) {
+                            console.error('Error updating order status:', error);
+                            alert('Đã có lỗi xảy ra khi cập nhật trạng thái đơn hàng.');
+                        }
+                    });
+                });
+            });
+
+
+            // Xóa chi tiết đơn hàng khi nhấp vào nút X
+            $(document).on('click', '.close-detail', function () {
+                $(this).closest('tr').remove();
+            });
+        });
+    </script>
+</th:block>
+</body>
+</html>
