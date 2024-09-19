@@ -50,18 +50,26 @@ public class OrderController {
                                    @RequestParam(defaultValue = "", required = false) String name,
                                    @RequestParam(defaultValue = "", required = false) String phone,
                                    @RequestParam(defaultValue = "", required = false) String status,
-                                   @RequestParam(defaultValue = "", required = false) String product) {
+                                   @RequestParam(defaultValue = "", required = false) String product,
+                                   @RequestParam(defaultValue = "", required = false) String bill_code) {
 
         //Lấy danh sách sản phẩm
         List<ShortProductInfoDTO> productList = productService.getListProduct();
         model.addAttribute("productList", productList);
 
-
-        //Lấy danh sách đơn hàng
-        Page<Order> orderPage = orderService.adminGetListOrders(id, name, phone, status, product, page);
-        model.addAttribute("orderPage", orderPage.getContent());
-        model.addAttribute("totalPages", orderPage.getTotalPages());
-        model.addAttribute("currentPage", orderPage.getPageable().getPageNumber() + 1);
+        // Nếu bill_code không rỗng, thực hiện tìm kiếm theo bill_code
+        if (!bill_code.isEmpty()) {
+            List<Order> ordersByBillCode = orderService.findOrdersByBillCode(bill_code);
+            model.addAttribute("orderPage", ordersByBillCode);
+            model.addAttribute("totalPages", 1); // Vì chỉ tìm theo bill_code, kết quả sẽ là 1 page
+            model.addAttribute("currentPage", 1); // Trang hiện tại cũng là 1
+        } else {
+            // Lấy danh sách đơn hàng khi không có tìm kiếm theo bill_code
+            Page<Order> orderPage = orderService.adminGetListOrders(id, name, phone, status, product, page);
+            model.addAttribute("orderPage", orderPage.getContent());
+            model.addAttribute("totalPages", orderPage.getTotalPages());
+            model.addAttribute("currentPage", orderPage.getPageable().getPageNumber() + 1);
+        }
 
         return "admin/order/list";
     }

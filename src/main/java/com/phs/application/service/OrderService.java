@@ -36,4 +36,6 @@ public interface OrderService {
     long getCountOrder();
 
     List<Number> createOrderV2(CreateOrderRequestV2 createOrderRequest, long id);
+
+    List<Order> findOrdersByBillCode(String billCode);
 }

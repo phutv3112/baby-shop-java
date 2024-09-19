@@ -626,4 +626,9 @@ public void updateStatusOrderV2(String billCode, int status) {
         List<OrderDetailResponse> orders = orderRepositoryImpl.getDetail(billCode);
         return orders;
     }
+
+    @Override
+    public List<Order> findOrdersByBillCode(String billCode) {
+        return orderRepository.findOrdersByBillCode(billCode);
+    }
 }
