@@ -3,6 +3,7 @@ package com.phs.application.model.mapper;
 import com.phs.application.entity.User;
 import com.phs.application.model.request.CreateUserRequest;
 import com.phs.application.model.dto.UserDTO;
+import com.phs.application.model.request.CreateUserRequestDto;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import java.sql.Timestamp;
@@ -35,6 +36,22 @@ public class UserMapper {
         user.setStatus(true);
         user.setRoles(new ArrayList<>(Arrays.asList("USER")));
 
+        return user;
+    }
+    public static User toUser(CreateUserRequestDto createUserRequest) {
+        User user = new User();
+        user.setFullName(createUserRequest.getFullName());
+        user.setEmail(createUserRequest.getEmail());
+        // Hash password using BCrypt
+        String hash = BCrypt.hashpw(createUserRequest.getPassword(), BCrypt.gensalt(12));
+        user.setPassword(hash);
+        user.setPhone(createUserRequest.getPhone());
+        user.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+        user.setStatus(true);
+        user.setAddress(createUserRequest.getAddress());
+        ArrayList<String> roles = new ArrayList<>();
+        roles.add(createUserRequest.getRole());
+        user.setRoles(roles);
         return user;
     }
 }

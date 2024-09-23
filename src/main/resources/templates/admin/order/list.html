@@ -69,12 +69,12 @@
 
         </header>
         <section class="card">
-                        <header class="card-header">
-                            <div class="input-group">
-                                <input type="text" class="form-control" placeholder="Nhập mã vận đơn..." aria-label="Username" aria-describedby="basic-addon1">
-                                <span class="input-group-text" id="basic-addon1"><i class="fas fa-search"></i></span>
-                            </div>
-                        </header>
+            <header class="card-header">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="search-bill-code" placeholder="Nhập mã vận đơn..." aria-label="Username" aria-describedby="basic-addon1">
+                    <span class="input-group-text" id="basic-addon1"><i class="fas fa-search"></i></span>
+                </div>
+            </header>
             <div class="card-body">
                 <table class="table table-bordered table-striped mb-0">
                     <thead>
@@ -101,6 +101,7 @@
         $(document).ready(function () {
             $('.status-column').on('click', function () {
                 let status = $(this).data('status');
+
                 let apiUrl = `http://localhost:9999/api/orders/status?status=${status}`;
 
                 // Xóa lớp active khỏi tất cả các cột
@@ -113,6 +114,7 @@
                     url: apiUrl,
                     method: 'GET',
                     success: function (data) {
+                        console.log("data list", data);
                         let orderDetails = $('#order-details');
                         orderDetails.empty(); // Xóa nội dung cũ
 
@@ -172,6 +174,84 @@
                         alert('Đã có lỗi xảy ra khi lấy dữ liệu đơn hàng.');
                     }
                 });
+            });
+
+            $('#basic-addon1').on('click', function() {
+                var billCode = $('#search-bill-code').val(); // Lấy giá trị từ ô input
+                let apiUrl = `http://localhost:9999/admin/orders/search?bill_code=${billCode}`;
+                if (billCode.trim() !== "") {
+                    // Gọi API bằng AJAX
+                    $.ajax({
+                        url: '/orders/search', // Địa chỉ API (có thể thay đổi nếu cần)
+                        method: 'GET',
+                        data: {
+                            bill_code: billCode
+                        },
+                        success: function (data) {
+                            console.log("data", data);
+                            console.log("bill code", billCode);
+                            let orderDetails = $('#order-details');
+                            orderDetails.empty(); // Xóa nội dung cũ
+
+                            // Kiểm tra dữ liệu trả về có rỗng không
+                            if (data.length === 0) {
+                                orderDetails.append('<tr><td colspan="6">Không có đơn hàng nào</td></tr>');
+                                return;
+                            }
+
+                            // Loại bỏ các bản ghi trùng lặp theo billCode
+                            let uniqueOrders = {};
+                            data.forEach(order => {
+                                if (!uniqueOrders[order.billCode]) {
+                                    uniqueOrders[order.billCode] = order;
+                                }
+                            });
+
+                            // Chuyển đổi đối tượng thành mảng
+                            let uniqueOrdersArray = Object.values(uniqueOrders);
+
+                            // Tạo bảng phụ chỉ với các cột thứ tự, billCode, quantity, totalPrice
+                            let tableHead = `
+                            <tr>
+                                <th>STT</th>
+                                <th>Mã đơn hàng</th>
+                                <th>Số lượng</th>
+                                <th>Tổng giá</th>
+                            </tr>
+                        `;
+
+                            let tableBody = uniqueOrdersArray.map((order, index) => `
+                            <tr>
+                                <td style="color:red;" class="order-detail" data-billcode="${order.billCode}" data-totalprice="${order.totalPrice}">${index + 1}</td>
+                                <td>${order.billCode || ''}</td>
+                                <td>${order.quantity || ''}</td>
+                                <td>${order.totalPrice || ''}</td>
+                            </tr>
+                        `).join('');
+
+                            orderDetails.append(`
+                            <tr>
+                                <td colspan="6">
+                                    <table class="table table-bordered table-striped mb-0 detail-table">
+                                        <thead>
+                                            ${tableHead}
+                                        </thead>
+                                        <tbody>
+                                            ${tableBody}
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        `);
+                        },
+                        error: function (error) {
+                            console.error('Error fetching order data:', error);
+                            alert('Đã có lỗi xảy ra khi lấy dữ liệu đơn hàng.');
+                        }
+                    });
+                } else {
+                    alert("Vui lòng nhập mã vận đơn!");
+                }
             });
 
             // Sự kiện click vào cột STT để lấy chi tiết đơn hàng

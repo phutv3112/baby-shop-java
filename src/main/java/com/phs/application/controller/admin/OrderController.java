@@ -18,6 +18,7 @@ import com.phs.application.service.PromotionService;
 import com.phs.application.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -50,29 +51,37 @@ public class OrderController {
                                    @RequestParam(defaultValue = "", required = false) String name,
                                    @RequestParam(defaultValue = "", required = false) String phone,
                                    @RequestParam(defaultValue = "", required = false) String status,
-                                   @RequestParam(defaultValue = "", required = false) String product,
-                                   @RequestParam(defaultValue = "", required = false) String bill_code) {
+                                   @RequestParam(defaultValue = "", required = false) String product) {
 
         //Lấy danh sách sản phẩm
         List<ShortProductInfoDTO> productList = productService.getListProduct();
         model.addAttribute("productList", productList);
 
-        // Nếu bill_code không rỗng, thực hiện tìm kiếm theo bill_code
-        if (!bill_code.isEmpty()) {
-            List<Order> ordersByBillCode = orderService.findOrdersByBillCode(bill_code);
-            model.addAttribute("orderPage", ordersByBillCode);
-            model.addAttribute("totalPages", 1); // Vì chỉ tìm theo bill_code, kết quả sẽ là 1 page
-            model.addAttribute("currentPage", 1); // Trang hiện tại cũng là 1
-        } else {
-            // Lấy danh sách đơn hàng khi không có tìm kiếm theo bill_code
-            Page<Order> orderPage = orderService.adminGetListOrders(id, name, phone, status, product, page);
-            model.addAttribute("orderPage", orderPage.getContent());
-            model.addAttribute("totalPages", orderPage.getTotalPages());
-            model.addAttribute("currentPage", orderPage.getPageable().getPageNumber() + 1);
-        }
+        // Lấy danh sách đơn hàng khi không có tìm kiếm theo bill_code
+        Page<Order> orderPage = orderService.adminGetListOrders(id, name, phone, status, product, page);
+        model.addAttribute("orderPage", orderPage.getContent());
+        model.addAttribute("totalPages", orderPage.getTotalPages());
+        model.addAttribute("currentPage", orderPage.getPageable().getPageNumber() + 1);
 
         return "admin/order/list";
     }
+
+    @GetMapping("/orders/search")
+    public ResponseEntity<List<Order>> getOrderByBillCode(
+                                   @RequestParam(defaultValue = "", required = false) String bill_code) {
+
+        // Nếu bill_code không rỗng, thực hiện tìm kiếm theo bill_code
+        if (!bill_code.isEmpty()) {
+            List<Order> orderPage = orderService.findOrdersByBillCode(bill_code);
+            return  ResponseEntity.ok(orderPage);
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+    }
+    @GetMapping("/order/search")
+    public ResponseEntity<String> getOrderByBill() {
+        return ResponseEntity.ok("Hello World");
+    }
+
 
     @GetMapping("/admin/orders/create")
     public String createOrderPage(Model model) {

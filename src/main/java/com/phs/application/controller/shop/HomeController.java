@@ -195,31 +195,18 @@ public class HomeController {
         return ResponseEntity.ok(orderServiceImpl.getDetailByBillCode(billCode));
     }
 
-//    @PostMapping("/api/update/status")
-//    public ResponseEntity<Object> updateStatus(@RequestBody UpdateStatusOrderRequest updateStatusOrderRequest, @RequestParam(name = "billCode") String billCode, @RequestParam(name = "userId") long userId) {
-//        orderServiceImpl.updateStatusOrderV2(updateStatusOrderRequest, billCode, userId);
-//        return ResponseEntity.ok("Cập nhật trạng thái thành công");
-//    }
-@PostMapping("/api/update/status")
-public ResponseEntity<Object> updateStatus(
-        @RequestParam(name = "billCode") String billCode,
-        @RequestParam(name = "status") int status) {
-    try {
-        orderServiceImpl.updateStatusOrderV2(billCode, status);
-        return ResponseEntity.ok("Cập nhật trạng thái thành công");
-    } catch (NotFoundException | BadRequestException | InternalServerException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    @PostMapping("/api/update/status")
+    public ResponseEntity<Object> updateStatus(
+            @RequestParam(name = "billCode") String billCode,
+            @RequestParam(name = "status") int status) {
+        try {
+            orderServiceImpl.updateStatusOrderV2(billCode, status);
+            return ResponseEntity.ok("Cập nhật trạng thái thành công");
+        } catch (NotFoundException | BadRequestException | InternalServerException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
-}
 
-
-
-
-    //    @GetMapping("/products")
-//    public ResponseEntity<Object> getListBestSellProducts(){
-//        List<ProductInfoDTO> productInfoDTOS = productService.getListBestSellProducts();
-//        return ResponseEntity.ok(productInfoDTOS);
-//    }
     @GetMapping("/products")
     public ResponseEntity<ProductResponse> getListBestSellProducts() {
         try {
