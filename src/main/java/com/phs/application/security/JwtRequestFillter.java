@@ -1,5 +1,7 @@
 package com.phs.application.security;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,6 +18,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 @Component
 public class JwtRequestFillter extends OncePerRequestFilter {
@@ -67,4 +72,33 @@ public class JwtRequestFillter extends OncePerRequestFilter {
         }
         return null;
     }
+
+//    private UsernamePasswordAuthenticationToken getAuthentication(Claims claims) {
+//        String username = claims.getSubject();
+//
+//        // Lấy roles từ Claims (nếu lưu dưới dạng JSON)
+//        Object rolesJson = claims.get("roles");
+//
+//        // Chuyển đổi từ JSON sang List<String>
+//        List<String> roles = new ArrayList<>();
+//        if (rolesJson instanceof List) {
+//            roles = (List<String>) rolesJson;
+//        } else if (rolesJson instanceof LinkedHashMap) {
+//            // Sử dụng ObjectMapper để chuyển đổi JSON nếu cần
+//            ObjectMapper mapper = new ObjectMapper();
+//            roles = mapper.convertValue(rolesJson, new TypeReference<List<String>>() {});
+//        }
+//
+//        if (username != null) {
+//            UserDetails user = userDetailsService.loadUserByUsername(username);
+//
+//            // Bạn có thể in ra roles để kiểm tra
+//            System.out.println("Roles from JWT: " + roles);
+//
+//            // Tạo Authentication token
+//            return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+//        }
+//        return null;
+//    }
+
 }
