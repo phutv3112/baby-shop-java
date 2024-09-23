@@ -42,10 +42,16 @@
         </header>
         <div class="card-body">
             <div class="row">
-                <div class="col-sm-6">
-                    <div class="mb-3">
-                        <button id="addToTable" class="btn btn-primary">Thêm mới tài khoản <i
-                                class="fas fa-plus"></i></button>
+                <div class="col-lg-12 col-sm-6">
+                    <div class="mb-3 d-flex justify-content-between">
+                        <a href="/admin/user/create" id="addToTable" class="btn btn-success">Thêm mới tài khoản <i
+                                class="fas fa-plus"></i>
+                        </a>
+                        <select name="role" id="role" class="form-control w-25">
+                            <option value="">-Lọc theo role-</option>
+                            <option value="USER">User</option>
+                            <option value="Shipper">Shipper</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -58,7 +64,7 @@
                     <th>Số điện thoại</th>
                     <th>Địa chỉ</th>
                     <th>Ngày tạo</th>
-<!--                    <th>Thao tác</th>-->
+                    <th>Thao tác</th>
                 </tr>
                 <tr>
                     <form method="GET" id="search-form">
@@ -68,29 +74,32 @@
                         <th><input type="text" name="phone" id="phone" class="form-control search-input"></th>
                         <th></th>
                         <th></th>
-<!--                        <th></th>-->
+                        <th></th>
                         <input type="hidden" name="page" id="page">
                     </form>
                 </tr>
                 </thead>
                 <tbody>
+                <tbody>
                 <th:block th:each="user : ${users}">
-                    <tr data-item-id="1">
-                    <td th:text="${user.id}"></td>
-                    <td th:text="${user.fullName}"></td>
-                    <td th:text="${user.email}"></td>
-                    <td th:text="${user.phone}"></td>
-                    <td th:text="${user.address}"></td>
-                    <td th:text="${#dates.format(user.createdAt, 'dd-MM-yyyy')}"></td>
-<!--                    <td class="actions">-->
-<!--                        <a href="#" class="hidden on-editing save-row"><i class="fas fa-save"></i></a>-->
-<!--                        <a href="#" class="hidden on-editing cancel-row"><i-->
-<!--                                class="fas fa-times"></i></a>-->
-<!--                        <a href="#" class="on-default edit-row"><i class="fas fa-pencil-alt"></i></a>-->
-<!--                        <a href="#" class="on-default remove-row"><i class="far fa-trash-alt"></i></a>-->
-<!--                    </td>-->
-                </tr>
+                    <tr data-item-id="${user.id}">
+                        <td th:text="${user.id}"></td>
+                        <td th:text="${user.fullName}"></td>
+                        <td th:text="${user.email}"></td>
+                        <td th:text="${user.phone}"></td>
+                        <td th:text="${user.address}"></td>
+                        <td th:text="${#dates.format(user.createdAt, 'dd-MM-yyyy')}"></td>
+                        <td class="actions">
+                            <a th:href="@{/admin/user/{id}(id=${user.id})}" class="on-default edit-row">
+                                <i class="fas fa-pencil-alt"></i>
+                            </a>
+                            <a href="#" th:data-id="${user.id}" class="on-default remove-row" id="delete-user">
+                                <i class="far fa-trash-alt"></i>
+                            </a>
+                        </td>
+                    </tr>
                 </th:block>
+                </tbody>
                 </tbody>
             </table>
             <br>
@@ -116,16 +125,49 @@
             phone = vars["phone"] || ""
             address = vars["address"] || ""
             page = vars["page"] || "1"
+            role = vars["role"] || "";
 
             $('#fullName').val(fullName)
             $('#email').val(email)
             $('#phone').val(phone)
             $('#address').val(address)
             $('#page').val(page)
+            $('#role').val(role);
 
             pagination([[${totalPages}]], [[${currentPage}]]);
         });
+
+        $("#delete-user").on("click",function (){
+            let id = $(this).data('id');
+            console.log("id:===", id);
+            swal({
+                title: 'Bạn chắc chắn muốn xóa!',
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                cancelButtonText: "Không",
+                confirmButtonText: "Có",
+            }).then(function (rs){
+                if (rs.value){
+                    $.ajax({
+                        url:"/admin/user/"+ id,
+                        type: "DELETE",
+                        success: function (data){
+                            console.log(data);
+                            toastr.success("Xóa danh mục thành công!");
+                            setTimeout(() => location.reload(), 500);
+                        },
+                        error: function (error){
+                            console.log("Error:", error);
+                            toastr.warning(error.responseJSON.message);
+                        }
+                    })
+                }
+            })
+        })
+
     </script>
 </th:block>
+
 </body>
 </html>

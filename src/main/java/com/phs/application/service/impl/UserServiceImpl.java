@@ -1,6 +1,7 @@
 package com.phs.application.service.impl;
 
 import com.phs.application.exception.BadRequestException;
+import com.phs.application.model.request.CreateUserRequestDto;
 import com.phs.application.repository.UserRepository;
 import com.phs.application.entity.User;
 import com.phs.application.model.dto.UserDTO;
@@ -59,6 +60,16 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
         return user;
     }
+    @Override
+    public User createNewUser(CreateUserRequestDto createUserRequest) {
+        User user = userRepository.findByEmail(createUserRequest.getEmail());
+        if (user != null) {
+            throw new BadRequestException("Email đã tồn tại trong hệ thống. Vui lòng sử dụng email khác!");
+        }
+        user = UserMapper.toUser(createUserRequest);
+        userRepository.save(user);
+        return user;
+    }
 
     @Override
     public void changePassword(User user, ChangePasswordRequest changePasswordRequest) {
@@ -80,8 +91,35 @@ public class UserServiceImpl implements UserService {
 
         return userRepository.save(user);
     }
+    @Override
+    public void updateUser(Long id, User user){
+        Optional<User> existingUserOpt = userRepository.findById(id);
+
+        if (existingUserOpt.isPresent()) {
+            User existingUser = existingUserOpt.get();
+
+            // Cập nhật thông tin từ form
+            existingUser.setFullName(user.getFullName());
+            existingUser.setPhone(user.getPhone());
+            existingUser.setAddress(user.getAddress());
+
+            // Lưu user đã cập nhật lại vào database
+            userRepository.save(existingUser);
+        }
+    }
+    @Override
     public User findById(Long id) {
         Optional<User> user = userRepository.findById(id);
         return user.orElse(null);
+    }
+    @Override
+    public void deleteUserById(Long id) {
+        User user = userRepository.findById(id).orElse(null);
+        if (user != null) {
+            userRepository.delete(user);
+        }else {
+            throw new BadRequestException("User not found");
+        }
+
     }
 }

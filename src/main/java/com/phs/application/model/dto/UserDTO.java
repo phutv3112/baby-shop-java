@@ -19,5 +19,4 @@ public class UserDTO {
     private String phone;
     private String avatar;
     private List<String> roles;
-
 }

@@ -268,97 +268,6 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
-//    @Override
-//    public void updateStatusOrderV2(UpdateStatusOrderRequest updateStatusOrderRequest, String billCode, long userId) {
-//        List<Long> ls = orderRepository.findByBillCode(billCode);
-//        if (ls.isEmpty()) {
-//            throw new NotFoundException("Đơn hàng không tồn tại");
-//        }
-//        for (Long item : ls){
-//            Optional<Order> rs = orderRepository.findById(item);
-//            if (rs.isEmpty()) {
-//                throw new NotFoundException("Đơn hàng không tồn tại");
-//            }
-//            Order order = rs.get();
-//            //Kiểm tra trạng thái của đơn hàng
-//            boolean check = false;
-//            for (Integer status : LIST_ORDER_STATUS) {
-//                if (status == updateStatusOrderRequest.getStatus()) {
-//                    check = true;
-//                    break;
-//                }
-//            }
-//            if (!check) {
-//                throw new BadRequestException("Trạng thái đơn hàng không hợp lệ");
-//            }
-//            //Cập nhật trạng thái đơn hàng
-//            if (order.getStatus() == ORDER_STATUS) {
-//                //Đơn hàng ở trạng thái chờ lấy hàng
-//                if (updateStatusOrderRequest.getStatus() == ORDER_STATUS) {
-//                    order.setReceiverPhone(updateStatusOrderRequest.getReceiverPhone());
-//                    order.setReceiverName(updateStatusOrderRequest.getReceiverName());
-//                    order.setReceiverAddress(updateStatusOrderRequest.getReceiverAddress());
-//                    //Đơn hàng ở trạng thái đang vận chuyển
-//                } else if (updateStatusOrderRequest.getStatus() == DELIVERY_STATUS) {
-//                    //Trừ đi một sản phẩm
-//                    productSizeRepository.minusOneProductBySize(order.getProduct().getId(), order.getSize());
-//                    //Đơn hàng ở trạng thái đã giao hàng
-//                } else if (updateStatusOrderRequest.getStatus() == COMPLETED_STATUS) {
-//                    //Trừ đi một sản phẩm và cộng một sản phẩm vào sản phẩm đã bán và cộng tiền
-//                    productSizeRepository.minusOneProductBySize(order.getProduct().getId(), order.getSize());
-//                    productRepository.plusOneProductTotalSold(order.getProduct().getId());
-//                    statistic(order.getTotalPrice(), order.getQuantity(), order);
-//                } else if (updateStatusOrderRequest.getStatus() != CANCELED_STATUS) {
-//                    throw new BadRequestException("Không thế chuyển sang trạng thái này");
-//                }
-//                //Đơn hàng ở trạng thái đang giao hàng
-//            } else if (order.getStatus() == DELIVERY_STATUS) {
-//                //Đơn hàng ở trạng thái đã giao hàng
-//                if (updateStatusOrderRequest.getStatus() == COMPLETED_STATUS) {
-//                    //Cộng một sản phẩm vào sản phẩm đã bán và cộng tiền
-//                    productRepository.plusOneProductTotalSold(order.getProduct().getId());
-//                    statistic(order.getTotalPrice(), order.getQuantity(), order);
-//                    //Đơn hàng ở trạng thái đã hủy
-//                } else if (updateStatusOrderRequest.getStatus() == RETURNED_STATUS) {
-//                    //Cộng lại một sản phẩm đã bị trừ
-//                    productSizeRepository.plusOneProductBySize(order.getProduct().getId(), order.getSize());
-//                    //Đơn hàng ở trạng thái đã trả hàng
-//                } else if (updateStatusOrderRequest.getStatus() == CANCELED_STATUS) {
-//                    //Cộng lại một sản phẩm đã bị trừ
-//                    productSizeRepository.plusOneProductBySize(order.getProduct().getId(), order.getSize());
-//                } else if (updateStatusOrderRequest.getStatus() != DELIVERY_STATUS) {
-//                    throw new BadRequestException("Không thế chuyển sang trạng thái này");
-//                }
-//                //Đơn hàng ở trạng thái đã giao hàng
-//            } else if (order.getStatus() == COMPLETED_STATUS) {
-//                //Đơn hàng đang ở trạng thái đã hủy
-//                if (updateStatusOrderRequest.getStatus() == RETURNED_STATUS) {
-//                    //Cộng một sản phẩm đã bị trừ và trừ đi một sản phẩm đã bán và trừ số tiền
-//                    productSizeRepository.plusOneProductBySize(order.getProduct().getId(), order.getSize());
-//                    productRepository.minusOneProductTotalSold(order.getProduct().getId());
-//                    updateStatistic(order.getTotalPrice(), order.getQuantity(), order);
-//                } else if (updateStatusOrderRequest.getStatus() != COMPLETED_STATUS) {
-//                    throw new BadRequestException("Không thế chuyển sang trạng thái này");
-//                }
-//            } else {
-//                if (order.getStatus() != updateStatusOrderRequest.getStatus()) {
-//                    throw new BadRequestException("Không thế chuyển đơn hàng sang trạng thái này");
-//                }
-//            }
-//
-//            User user = new User();
-//            user.setId(userId);
-//            order.setModifiedBy(user);
-//            order.setModifiedAt(new Timestamp(System.currentTimeMillis()));
-//            order.setNote(updateStatusOrderRequest.getNote());
-//            order.setStatus(updateStatusOrderRequest.getStatus());
-//            try {
-//                orderRepository.save(order);
-//            } catch (Exception e) {
-//                throw new InternalServerException("Lỗi khi cập nhật trạng thái");
-//            }
-//        }
-//    }
 @Override
 public void updateStatusOrderV2(String billCode, int status) {
     // Tìm danh sách đơn hàng dựa trên mã hóa đơn
@@ -517,19 +426,6 @@ public void updateStatusOrderV2(String billCode, int status) {
                 throw new NotFoundException("Sản phẩm không tồn tại!");
             }
         }
-
-//        //Kiểm tra size có sẵn
-//        for (ProductSize proId : createOrderRequest.getProducts()) {
-//            ProductSize productSize = productSizeRepository.checkProductAndSizeAvailable(proId.getProductId(), proId.getSize());
-//            if (productSize == null) {
-//                throw new BadRequestException("sản phẩm tạm hết, Vui lòng chọn sản phẩm khác!");
-//            }
-////            trừ số lượng sp
-//            productSizeRepositoryImpl.update(productSize);
-////             insert dữ liệu vào bảng map
-//
-//        }
-
 
         List<Number> res = new ArrayList<>();
 

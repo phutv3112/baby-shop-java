@@ -60,7 +60,8 @@ public class UserController {
         User user = userService.createUser(createUserRequest);
 
         //Gen token
-        UserDetails principal = new CustomUserDetails(user);
+        //UserDetails principal = new CustomUserDetails(user);
+        CustomUserDetails principal = new CustomUserDetails(user);
         String token = jwtTokenUtil.generateToken(principal);
 
         //Add token on cookie to login
@@ -82,6 +83,8 @@ public class UserController {
             ));
             //Gen token
             String token = jwtTokenUtil.generateToken((CustomUserDetails) authentication.getPrincipal());
+
+            System.out.println("token user controller :=========================================== " + token);
 
             //Add token to cookie to login
             Cookie cookie = new Cookie("JWT_TOKEN", token);

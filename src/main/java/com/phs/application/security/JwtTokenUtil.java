@@ -24,22 +24,42 @@ public class JwtTokenUtil {
     @Value("${jwt.secret}")
     private String secret;
 
-    //Sinh token
-    public String generateToken(UserDetails userDetails) {
-        //Lưu thông tin Authorities của user vào claims
+    //Gen Bearer token
+//    public String generateToken(UserDetails userDetails) {
+//        //Lưu thông tin Authorities của user vào claims
+//        Map<String, Object> claims = new HashMap<>();
+//
+//        //1. Định nghĩa các claims: issuer, expiration, subject, id
+//        //2. Mã hóa token sử dụng thuật toán HS512 và key bí mật
+//        //3. Convert thành chuỗi URL an toàn
+//        //4. Cộng chuỗi đã sinh ra với tiền tố Bearer
+//
+//        String token = Jwts.builder()
+//                .setClaims(claims)
+//                .setSubject(userDetails.getUsername())
+//                .setIssuedAt(new Date(System.currentTimeMillis()))
+//                .setExpiration(new Date(System.currentTimeMillis() + duration * 1000))
+//                .signWith(SignatureAlgorithm.HS512, secret).compact();
+//
+//        return token;
+//    }
+    public String generateToken(CustomUserDetails customUserDetails) {
+        // Lưu thông tin Authorities của user vào claims
         Map<String, Object> claims = new HashMap<>();
 
-        //1. Định nghĩa các claims: issuer, expiration, subject, id
-        //2. Mã hóa token sử dụng thuật toán HS512 và key bí mật
-        //3. Convert thành chuỗi URL an toàn
-        //4. Cộng chuỗi đã sinh ra với tiền tố Bearer
+        // Thêm vai trò của user vào claims
+        System.out.println("Roles:=========================================== " + customUserDetails.getUserRoles());
+        claims.put("roles", customUserDetails.getUserRoles()); // Đảm bảo rằng roles đã được thêm
+
+        // Sinh JWT token
         String token = Jwts.builder()
                 .setClaims(claims)
-                .setSubject(userDetails.getUsername())
+                .setSubject(customUserDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + duration * 1000))
-                .signWith(SignatureAlgorithm.HS512, secret).compact();
-
+                .signWith(SignatureAlgorithm.HS512, secret)
+                .compact();
+        System.out.println("token :=========================================== " + token);
         return token;
     }
 

@@ -31,26 +31,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Long> findByBillCode(String billCode);
     int countByProductId(String id);
 
-
-//        @Query("SELECT new com.phs.application.model.dto.OrderDetailDTO(" +
-//                "o.id, " +
-//                "o.totalPrice, " +
-//                "p.price, " +
-//                "o.receiverName, " +
-//                "o.receiverPhone, " +
-//                "o.receiverAddress, " +
-//                "o.status, " +
-//                "o.quantity, " +
-//                "o.statusText, " +
-//                "o.sizeVn, " +
-//                "o.sizeUs, " +
-//                "o.sizeCm, " +
-//                "p.productName, " +
-//                "p.productImg) " +
-//                "FROM Order o " +
-//                "JOIN o.product p " +
-//                "where o.id = :id")
-//        OrderDetailDTO getOrderDetail(long id, long userId);
     @Query("SELECT COUNT(DISTINCT o.billCode) FROM Order o")
     long countDistinctBillCodes();
 
