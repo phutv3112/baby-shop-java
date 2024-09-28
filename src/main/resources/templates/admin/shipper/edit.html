@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{/layout/layout_admin :: main-fragment(
+                                                ~{:: title},
+                                                'header',
+                                                'sidebar',
+                                                ~{:: #css-resources},
+                                                ~{:: #js-resources},
+                                                ~{:: #main-content}
+                                               )}">
+<head>
+    <meta charset="UTF-8">
+    <title>Cập nhật tài khoản</title>
+    <th:block id="css-resources">
+        <link rel="stylesheet" th:href="@{/adminlte/pagination/simplePagination.css}">
+        <!--        <link rel="stylesheet" th:href="@{/adminlte/vendor/select2/css/select2.css}">-->
+        <!--        <link rel="stylesheet" th:href="@{/adminlte/vendor/select2-bootstrap-theme/select2-bootstrap.min.css}">-->
+    </th:block>
+</head>
+<body>
+<section role="main" class="content-body pt-0" id="main-content">
+    <div class="w-75">
+        <h2>Cập nhật thông tin shipper</h2>
+        <form th:action="@{/admin/shipper/edit/{id}(id=${user.id})}" th:object="${shipper}" method="post">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="username">Tên tài khoản</label>
+                    <input type="text" id="username" name="username" class="form-control" th:value="*{username}" required>
+                    <div class="text-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="address">Địa chỉ</label>
+                    <input type="text" id="address" name="address" class="form-control" th:value="*{address}">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="phone">Số điện thoại</label>
+                    <input type="tel" id="phone" name="phone" class="form-control" th:value="*{phone}" required>
+                    <div class="text-danger" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+                </div>
+            </div>
+
+            <div class="form-row mt-3">
+                <div class="form-group col-md-12">
+                    <a href="/admin/users" class="btn btn-primary"><i
+                            class="fas fa-chevron-left"></i> Trở về</a>
+                    <button type="submit" class="btn btn-success">Lưu thay đổi </button>
+
+                </div>
+            </div>
+        </form>
+
+    </div>
+</section>
+<th:block id="js-resources">
+    <script type="text/javascript" th:src="@{/adminlte/js/list.min.js}"></script>
+    <script type="text/javascript" th:src="@{/adminlte/js/modal_image.js}"></script>
+    <script th:inline="javascript">
+
+    </script>
+</th:block>
+</body>
+</html>

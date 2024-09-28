@@ -7,10 +7,7 @@ import com.phs.application.exception.NotFoundException;
 import com.phs.application.model.ProductDTO1;
 import com.phs.application.model.ProductResponse1;
 import com.phs.application.model.dto.*;
-import com.phs.application.model.request.CreateOrderRequest;
-import com.phs.application.model.request.CreateOrderRequestV2;
-import com.phs.application.model.request.FilterProductRequest;
-import com.phs.application.model.request.UpdateStatusOrderRequest;
+import com.phs.application.model.request.*;
 import com.phs.application.model.response.ProductResponse;
 import com.phs.application.security.CustomUserDetails;
 import com.phs.application.service.*;
@@ -171,7 +168,7 @@ public class HomeController {
 
         return ResponseEntity.ok(order.getId());
     }
-
+    //Đây là api đặt hàng
     @PostMapping("/api/orders/v2")
     public ResponseEntity<Object> createOrderV2(@RequestBody CreateOrderRequestV2 createOrderRequest) {
 //        User user = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
@@ -179,7 +176,15 @@ public class HomeController {
 
         return ResponseEntity.ok(order);
     }
-
+    @PostMapping("/api/shippers/orders/change-status")
+    public ResponseEntity<Object> changeStatusByShipper(@RequestBody ChangeOrderStatusRequest changeOrderStatus){
+        orderService.updateStatusOrderByShipper(changeOrderStatus.getStatus(),changeOrderStatus.getShipperId(),changeOrderStatus.getOrderId());
+        return ResponseEntity.ok("success");
+    }
+    @GetMapping("/api/shippers/orders/")
+    public ResponseEntity<Object> getOrderOfShipperByStatus(@RequestBody GetOrderStatusRequest getOrder){
+        return ResponseEntity.ok(orderService.getListOrderOfShipperByStatus(getOrder.getStatus(),getOrder.getShipperId()));
+    }
     @GetMapping("/api/orders")
     public ResponseEntity<Object> getOrder(@RequestParam(name = "status", required = false) Integer status, @RequestParam(name = "buyer", required = false) Long buyer) {
         return ResponseEntity.ok(orderServiceImpl.getSummary(buyer, status));

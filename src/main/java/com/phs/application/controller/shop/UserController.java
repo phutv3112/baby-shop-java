@@ -1,18 +1,18 @@
 package com.phs.application.controller.shop;
 
 import com.phs.application.config.Contant;
+import com.phs.application.entity.Shipper;
 import com.phs.application.entity.User;
 import com.phs.application.exception.BadRequestException;
+import com.phs.application.model.dto.SignInDTO;
 import com.phs.application.model.dto.UserDTO;
 import com.phs.application.model.mapper.UserMapper;
-import com.phs.application.model.request.ChangePasswordRequest;
-import com.phs.application.model.request.CreateUserRequest;
-import com.phs.application.model.request.LoginRequest;
-import com.phs.application.model.request.UpdateProfileRequest;
+import com.phs.application.model.request.*;
 import com.phs.application.model.response.ResponseOK;
 import com.phs.application.security.CustomUserDetails;
 import com.phs.application.security.JwtTokenUtil;
 import com.phs.application.service.UserService;
+import com.phs.application.service.impl.ShipperServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +41,8 @@ public class UserController {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+    @Autowired
+    private ShipperServiceImpl shipperServiceImpl;
 
     @GetMapping("/users")
     public ResponseEntity<Object> getListUsers() {
@@ -131,4 +133,16 @@ public class UserController {
         ResponseOK response = new ResponseOK("200", "OK", "SUCCESS");
         return ResponseEntity.ok(response);
     }
+    @PostMapping("/api/shipper/log-in")
+    public ResponseEntity<Object> signInShipper(@RequestBody SignInShipperRequest request) {
+        SignInDTO userCreden = shipperServiceImpl.signIn(request.getUsername(),request.getPassword());
+
+        if (userCreden==null) {
+            ResponseOK response = new ResponseOK("404", "FAIL", "User not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+
+        return ResponseEntity.ok(userCreden);
+    }
+
 }
