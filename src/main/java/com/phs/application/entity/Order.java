@@ -98,7 +98,10 @@ public class Order {
     private int size;
     @Column(name = "quantity")
     private int quantity;
-
+    @Column(name = "shipper_id", nullable = true)
+    private Long shipperId;
+    @Column(name="has_paid", columnDefinition = "boolean default false")
+    private boolean hasPaid=false;
     @ManyToOne
     @JoinColumn(name = "buyer")
     private User buyer;

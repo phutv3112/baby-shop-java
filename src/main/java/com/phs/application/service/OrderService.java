@@ -25,9 +25,9 @@ public interface OrderService {
     Order findOrderById(long id);
 
     void updateStatusOrder(UpdateStatusOrderRequest updateStatusOrderRequest, long orderId, long userId);
-
+    void updateStatusOrderByShipper(int status, Long shipperId, long orderId);
     List<OrderInfoDTO> getListOrderOfPersonByStatus(int status, long userId);
-
+    List<Order> getListOrderOfShipperByStatus(int status, Long shipperId);
     OrderDetailDTO userGetDetailById(long id, long userId);
 
     void userCancelOrder(long id, long userId);
@@ -38,4 +38,5 @@ public interface OrderService {
     List<Number> createOrderV2(CreateOrderRequestV2 createOrderRequest, long id);
 
     List<Order> findOrdersByBillCode(String billCode);
+    void changeOrderPaymentStatus(long orderId);
 }

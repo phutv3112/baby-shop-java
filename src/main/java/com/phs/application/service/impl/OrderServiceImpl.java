@@ -267,7 +267,87 @@ public class OrderServiceImpl implements OrderService {
             throw new InternalServerException("Lỗi khi cập nhật trạng thái");
         }
     }
-
+    @Transactional
+    @Override
+    public void updateStatusOrderByShipper(int status, Long shipperId, long orderId){
+        Optional<Order> rs = orderRepository.findById(orderId);
+        if (rs.isEmpty()) {
+            throw new NotFoundException("Đơn hàng không tồn tại");
+        }
+        Order order = rs.get();
+        //Kiểm tra trạng thái của đơn hàng
+        boolean check = false;
+        for (Integer systemStatus : LIST_ORDER_STATUS) {
+            if (systemStatus == status) {
+                check = true;
+                break;
+            }
+        }
+        if (!check) {
+            throw new BadRequestException("Trạng thái đơn hàng không hợp lệ");
+        }
+        //Cập nhật trạng thái đơn hàng
+        if (order.getStatus() == ORDER_STATUS) {
+            //Đơn hàng ở trạng thái chờ lấy hàng
+            if (status == ORDER_STATUS) {
+            } else if (status == DELIVERY_STATUS) {
+                //Trừ đi một sản phẩm
+                productSizeRepository.minusOneProductBySize(order.getProduct().getId(), order.getSize());
+                //orderRepository.updateShipperIdForOrder(shipperId, orderId);
+                order.setShipperId(shipperId);
+                //Đơn hàng ở trạng thái đã giao hàng
+            } else if (status == COMPLETED_STATUS) {
+                //Trừ đi một sản phẩm và cộng một sản phẩm vào sản phẩm đã bán và cộng tiền
+                productSizeRepository.minusOneProductBySize(order.getProduct().getId(), order.getSize());
+                productRepository.plusOneProductTotalSold(order.getProduct().getId());
+                statistic(order.getTotalPrice(), order.getQuantity(), order);
+            } else if (status != CANCELED_STATUS) {
+                throw new BadRequestException("Không thế chuyển sang trạng thái này");
+            }
+            //Đơn hàng ở trạng thái đang giao hàng
+        } else if (order.getStatus() == DELIVERY_STATUS) {
+            //Đơn hàng ở trạng thái đã giao hàng
+            if (status == COMPLETED_STATUS) {
+                //Cộng một sản phẩm vào sản phẩm đã bán và cộng tiền
+                productRepository.plusOneProductTotalSold(order.getProduct().getId());
+                statistic(order.getTotalPrice(), order.getQuantity(), order);
+                //Đơn hàng ở trạng thái đã hủy
+            } else if (status == RETURNED_STATUS) {
+                //Cộng lại một sản phẩm đã bị trừ
+                productSizeRepository.plusOneProductBySize(order.getProduct().getId(), order.getSize());
+                //orderRepository.updateShipperIdForOrder(null, orderId);
+                order.setShipperId(null);
+                //Đơn hàng ở trạng thái đã trả hàng
+            } else if (status == CANCELED_STATUS) {
+                //Cộng lại một sản phẩm đã bị trừ
+                productSizeRepository.plusOneProductBySize(order.getProduct().getId(), order.getSize());
+            } else if (status != DELIVERY_STATUS) {
+                throw new BadRequestException("Không thế chuyển sang trạng thái này");
+            }
+            //Đơn hàng ở trạng thái đã giao hàng
+        } else if (order.getStatus() == COMPLETED_STATUS) {
+            //Đơn hàng đang ở trạng thái đã hủy
+            if (status == RETURNED_STATUS) {
+                //Cộng một sản phẩm đã bị trừ và trừ đi một sản phẩm đã bán và trừ số tiền
+                productSizeRepository.plusOneProductBySize(order.getProduct().getId(), order.getSize());
+                productRepository.minusOneProductTotalSold(order.getProduct().getId());
+                order.setShipperId(null);
+                updateStatistic(order.getTotalPrice(), order.getQuantity(), order);
+            } else if (status != COMPLETED_STATUS) {
+                throw new BadRequestException("Không thế chuyển sang trạng thái này");
+            }
+        } else {
+            if (order.getStatus() != status) {
+                throw new BadRequestException("Không thế chuyển đơn hàng sang trạng thái này");
+            }
+        }
+        order.setStatus(status);
+        try {
+            orderRepository.save(order);
+        } catch (Exception e) {
+            throw new InternalServerException("Lỗi khi cập nhật trạng thái");
+        }
+    }
 @Override
 public void updateStatusOrderV2(String billCode, int status) {
     // Tìm danh sách đơn hàng dựa trên mã hóa đơn
@@ -362,7 +442,11 @@ public void updateStatusOrderV2(String billCode, int status) {
         }
         return list;
     }
-
+    @Override
+    public List<Order> getListOrderOfShipperByStatus(int status, Long shipperId){
+        List<Order> list = orderRepository.getListOrderOfShipperByStatus(status, shipperId);
+        return list;
+    }
     @Override
     public OrderDetailDTO userGetDetailById(long id, long userId) {
         OrderDetailDTO order = orderRepository.userGetDetailById(id, userId);
@@ -526,5 +610,15 @@ public void updateStatusOrderV2(String billCode, int status) {
     @Override
     public List<Order> findOrdersByBillCode(String billCode) {
         return orderRepository.findOrdersByBillCode(billCode);
+    }
+    @Override
+    public void changeOrderPaymentStatus(long orderId){
+        Optional<Order> rs = orderRepository.findById(orderId);
+        if (rs.isEmpty()) {
+            throw new NotFoundException("Đơn hàng không tồn tại");
+        }
+        Order order = rs.get();
+        order.setHasPaid(true);
+        orderRepository.save(order);
     }
 }

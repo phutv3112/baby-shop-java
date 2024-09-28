@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{/layout/layout_admin :: main-fragment(
+                                                ~{:: title},
+                                                'header',
+                                                'sidebar',
+                                                ~{:: #css-resources},
+                                                ~{:: #js-resources},
+                                                ~{:: #main-content}
+                                               )}">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách tài khoản</title>
+    <th:block id="css-resources">
+        <link rel="stylesheet" th:href="@{/adminlte/pagination/simplePagination.css}">
+    </th:block>
+</head>
+<body>
+<section role="main" class="content-body" id="main-content">
+    <header class="page-header">
+        <div class="right-wrapper text-right">
+            <ol class="breadcrumbs">
+                <li>
+                    <a href="/admin">
+                        <i class="bx bx-home-alt"></i>
+                    </a>
+                </li>
+                <li><span>Danh sách Shipper</span></li>
+            </ol>
+            <a class="sidebar-right-toggle" data-open="sidebar-right"><i
+                    class="fas fa-chevron-left"></i></a>
+        </div>
+    </header>
+
+    <section class="card">
+        <header class="card-header">
+            <div class="card-actions">
+                <a href="#" class="card-action card-action-toggle" data-card-toggle></a>
+                <a href="#" class="card-action card-action-dismiss" data-card-dismiss></a>
+            </div>
+            <h2 class="card-title">Danh sách Shipper </h2>
+        </header>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-12 col-sm-6">
+                    <div class="mb-3 d-flex justify-content-between">
+                        <a href="/admin/shipper/create" id="addToTable" class="btn btn-success">Thêm mới Shipper <i
+                                class="fas fa-plus"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <table class="table table-bordered table-striped mb-0" id="datatable-editable">
+                <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Ten tài khoản</th>
+                    <th>Mật khẩu</th>
+                    <th>Số điện thoại</th>
+                    <th>Địa chỉ</th>
+                    <th>Ngày tạo</th>
+                    <th>Thao tác</th>
+                </tr>
+                <tr>
+                    <form method="GET" id="search-form">
+                        <th></th>
+                        <th><input type="text" name="username" id="username" class="form-control search-input"></th>
+                        <th><input type="text" name="phone" id="phone" class="form-control search-input"></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <input type="hidden" name="page" id="page">
+                    </form>
+                </tr>
+                </thead>
+                <tbody>
+                <tbody>
+                <th:block th:each="shipper : ${shippers}">
+                    <tr data-item-id="${shipper.id}">
+                        <td th:text="${shipper.id}"></td>
+                        <td th:text="${shipper.username}"></td>
+                        <td th:text="${shipper.password}"></td>
+                        <td th:text="${shipper.phone}"></td>
+                        <td th:text="${shipper.address}"></td>
+                        <td th:text="${#dates.format(shipper.createdAt, 'dd-MM-yyyy')}"></td>
+                        <td class="actions">
+                            <a th:href="@{/admin/shipper/{id}(id=${shipper.id})}" class="on-default edit-row">
+                                <i class="fas fa-pencil-alt"></i>
+                            </a>
+                            <a href="#" th:data-id="${shipper.id}" class="on-default remove-row" id="delete-shipper">
+                                <i class="far fa-trash-alt"></i>
+                            </a>
+                        </td>
+                    </tr>
+                </th:block>
+                </tbody>
+                </tbody>
+            </table>
+            <br>
+            <!-- Pagination -->
+            <nav aria-label="Page navigation">
+                <ul class="pagination" id="pagination"></ul>
+            </nav>
+        </div>
+    </section>
+
+</section>
+
+<th:block id="js-resources">
+    <script type="text/javascript" th:src="@{/adminlte/pagination/jquery.simplePagination.js}"></script>
+    <script type="text/javascript" th:src="@{/adminlte/js/table.js}"></script>
+    <script th:inline="javascript">
+        let fullName, email, phone, address, page;
+
+        $(function () {
+            let vars = parseUrl();
+            fullName = vars["fullName"] || ""
+            email = vars["email"] || ""
+            phone = vars["phone"] || ""
+            address = vars["address"] || ""
+            page = vars["page"] || "1"
+            role = vars["role"] || "";
+
+            $('#fullName').val(fullName)
+            $('#email').val(email)
+            $('#phone').val(phone)
+            $('#address').val(address)
+            $('#page').val(page)
+            $('#role').val(role);
+
+            pagination([[${totalPages}]], [[${currentPage}]]);
+        });
+
+        $("#delete-shipper").on("click",function (){
+            let id = $(this).data('id');
+            console.log("id:===", id);
+            swal({
+                title: 'Bạn chắc chắn muốn xóa!',
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                cancelButtonText: "Không",
+                confirmButtonText: "Có",
+            }).then(function (rs){
+                if (rs.value){
+                    $.ajax({
+                        url:"/admin/shipper/"+ id,
+                        type: "DELETE",
+                        success: function (data){
+                            console.log(data);
+                            toastr.success("Xóa danh mục thành công!");
+                            setTimeout(() => location.reload(), 500);
+                        },
+                        error: function (error){
+                            console.log("Error:", error);
+                            toastr.warning(error.responseJSON.message);
+                        }
+                    })
+                }
+            })
+        })
+
+    </script>
+</th:block>
+
+</body>
+</html>
