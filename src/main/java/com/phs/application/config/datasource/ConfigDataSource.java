@@ -16,7 +16,7 @@ public class ConfigDataSource {
 
     public static final String USERNAME = "root";
 
-    public static final String PASSWORD = "123456";
+    public static final String PASSWORD = "12345";
 
     @Bean
     public DataSource dataSource() {

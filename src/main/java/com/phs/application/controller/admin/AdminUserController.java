@@ -16,7 +16,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Controller
@@ -38,6 +40,21 @@ public class AdminUserController {
         model.addAttribute("currentPage", users.getPageable().getPageNumber() + 1);
         return "admin/user/list";
     }
+
+    @GetMapping("/admin/users/filter")
+    @ResponseBody  // Trả về JSON
+    public Map<String, Object> filterUser(@RequestParam(defaultValue = "", required = false) String role,
+                                          @RequestParam(defaultValue = "1", required = false) Integer page) {
+        Page<User> users = userService.adminFilterListUserPages(role, page);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("users", users.getContent());
+        result.put("totalPages", users.getTotalPages());
+        result.put("currentPage", users.getPageable().getPageNumber() + 1);
+
+        return result;  // Trả về dưới dạng JSON
+    }
+
 
     @GetMapping("/api/admin/users/list")
     public ResponseEntity<Object> getListUserPages(@RequestParam(defaultValue = "", required = false) String fullName,

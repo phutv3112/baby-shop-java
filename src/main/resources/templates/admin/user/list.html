@@ -50,7 +50,7 @@
                         <select name="role" id="role" class="form-control w-25">
                             <option value="">-Lọc theo role-</option>
                             <option value="USER">User</option>
-                            <option value="Shipper">Shipper</option>
+                            <option value="SHIPPER">Shipper</option>
                         </select>
                     </div>
                 </div>
@@ -80,7 +80,6 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tbody>
                 <th:block th:each="user : ${users}">
                     <tr data-item-id="${user.id}">
                         <td th:text="${user.id}"></td>
@@ -99,7 +98,6 @@
                         </td>
                     </tr>
                 </th:block>
-                </tbody>
                 </tbody>
             </table>
             <br>
@@ -165,6 +163,67 @@
                 }
             })
         })
+
+        $(document).ready(function () {
+            // Khi giá trị role được thay đổi
+            $('#role').change(function () {
+                var selectedRole = $(this).val(); // Lấy giá trị role đã chọn
+
+                // Gửi yêu cầu AJAX
+                $.ajax({
+                    url: '/admin/users/filter',
+                    type: 'GET',
+                    data: {
+                        role: selectedRole,
+                        page: 1  // Khởi tạo trang đầu tiên
+                    },
+                    success: function (response) {
+                        // Xóa các dòng hiện tại trong bảng
+                        console.log("response===", response);
+                        console.log("role===", selectedRole);
+                        $('#datatable-editable tbody').empty();
+
+                        // Lặp qua danh sách người dùng trả về và tạo các dòng mới trong bảng
+                        $.each(response.users, function (index, user) {
+                            // Chuyển timestamp thành đối tượng Date và định dạng theo dd/MM/yyyy
+                            var createdAt = new Date(user.createdAt).toLocaleDateString("vi-VN", {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric'
+                            });
+
+                            var userRow = `
+                            <tr data-item-id="${user.id}">
+                                <td>${user.id}</td>
+                                <td>${user.fullName}</td>
+                                <td>${user.email}</td>
+                                <td>${user.phone}</td>
+                                <td>${user.address}</td>
+                                <td>${createdAt}</td>
+                                <td class="actions">
+                                    <a href="/admin/user/${user.id}" class="on-default edit-row">
+                                        <i class="fas fa-pencil-alt"></i>
+                                    </a>
+                                    <a href="#" data-id="${user.id}" class="on-default remove-row" id="delete-user">
+                                        <i class="far fa-trash-alt"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            `;
+
+                            $('#datatable-editable tbody').append(userRow);
+                        });
+
+
+                        // Cập nhật phân trang nếu cần
+                        pagination(response.totalPages, response.currentPage);
+                    },
+                    error: function (error) {
+                        console.error("Error:", error);
+                    }
+                });
+            });
+        });
 
     </script>
 </th:block>
