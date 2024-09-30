@@ -21,7 +21,7 @@
 <section role="main" class="content-body pt-0" id="main-content">
     <div class="w-75">
         <h2>Cập nhật thông tin shipper</h2>
-        <form th:action="@{/admin/shipper/edit/{id}(id=${user.id})}" th:object="${shipper}" method="post">
+        <form th:action="@{/admin/shipper/edit/{id}(id=${shipper.id})}" th:object="${shipper}" method="post">
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="username">Tên tài khoản</label>
@@ -29,7 +29,13 @@
                     <div class="text-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
                 </div>
             </div>
-
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="username">Mật khẩu</label>
+                    <input type="text" id="password" name="password" class="form-control" th:value="*{password}" required>
+                    <div class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                </div>
+            </div>
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="address">Địa chỉ</label>
