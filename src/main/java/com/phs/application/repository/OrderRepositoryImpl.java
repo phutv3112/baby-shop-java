@@ -17,7 +17,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public class OrderRepositoryImpl {
+public class OrderRepositoryImpl  {
 
     @Autowired
     @Qualifier("template")

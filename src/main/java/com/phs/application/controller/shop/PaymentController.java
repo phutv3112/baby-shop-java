@@ -21,7 +21,7 @@ public class PaymentController {
     @Autowired
     private OrderService orderService;
     @GetMapping("/vn-pay")
-    public ResponseObject<PaymentDTO.VNPayResponse> pay(HttpServletRequest request) {
+    public ResponseObject<PaymentDTO.VNPayResponse> pay(HttpServletRequest request){
         return new ResponseObject<PaymentDTO.VNPayResponse>(HttpStatus.OK.toString(), "Success", paymentService.createVnPayPayment(request));
     }
     @GetMapping("/vn-pay-callback")
