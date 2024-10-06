@@ -51,6 +51,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Page<User> adminFilterListUserPages(String role, Integer page) {
+        page--;
+        if (page < 0) {
+            page = 0;
+        }
+        Pageable pageable = PageRequest.of(page, LIMIT_USER, Sort.by("created_at").descending());
+        return userRepository.adminFilterListUserPages(role, pageable);
+    }
+
+    @Override
     public User createUser(CreateUserRequest createUserRequest) {
         User user = userRepository.findByEmail(createUserRequest.getEmail());
         if (user != null) {
