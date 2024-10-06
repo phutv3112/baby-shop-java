@@ -182,8 +182,8 @@ public class HomeController {
         return ResponseEntity.ok("success");
     }
     @GetMapping("/api/shippers/orders/")
-    public ResponseEntity<Object> getOrderOfShipperByStatus(@RequestBody GetOrderStatusRequest getOrder){
-        return ResponseEntity.ok(orderService.getListOrderOfShipperByStatus(getOrder.getStatus(),getOrder.getShipperId()));
+    public ResponseEntity<Object> getOrderOfShipperByStatus(@RequestParam(name = "status", required = false) Integer status, @RequestParam(name = "shipper_id", required = false) Long shipper_id){
+        return ResponseEntity.ok(orderService.getListOrderOfShipperByStatus(status,shipper_id));
     }
     @GetMapping("/api/orders")
     public ResponseEntity<Object> getOrder(@RequestParam(name = "status", required = false) Integer status, @RequestParam(name = "buyer", required = false) Long buyer) {
