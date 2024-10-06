@@ -18,6 +18,7 @@ public interface UserService {
     List<UserDTO> getListUsers();
 
     Page<User> adminListUserPages(String fullName, String phone, String email, Integer page);
+    Page<User> adminFilterListUserPages(String role, Integer page);
 
     User createUser(CreateUserRequest createUserRequest);
     User createNewUser(CreateUserRequestDto createUserRequestDto);
