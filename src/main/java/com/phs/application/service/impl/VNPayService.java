@@ -1,7 +1,10 @@
 package com.phs.application.service.impl;
 
 import com.phs.application.config.VNPayConfig;
+import com.phs.application.entity.Order;
 import com.phs.application.model.dto.PaymentDTO;
+import com.phs.application.repository.OrderRepository;
+import com.phs.application.repository.OrderRepositoryImpl;
 import com.phs.application.utils.VNPayUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,9 +16,13 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class VNPayService {
     private final VNPayConfig vnpayConfig;
+    private final OrderRepository orderRepository;
+
     public PaymentDTO.VNPayResponse createVnPayPayment(HttpServletRequest request) {
-        long amount = Integer.parseInt(request.getParameter("amount")) * 100L;
+
         long orderId=Integer.parseInt(request.getParameter("orderId"));
+        Order order = orderRepository.findById(orderId).get();
+        long amount =order.getTotalPrice() * 100L;
         String bankCode = request.getParameter("bankCode");
         Map<String, String> vnpParamsMap = vnpayConfig.getVNPayConfig(orderId);
         vnpParamsMap.put("vnp_Amount", String.valueOf(amount));
