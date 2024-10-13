@@ -75,6 +75,21 @@ public class DashboardController {
         long countOrders = orderService.getCountOrder();
         return ResponseEntity.ok(countOrders);
     }
+    @GetMapping("/api/admin/count/orders-completed")
+    public ResponseEntity<Object> getCountOrdersCompleted(){
+        long countOrders = orderService.getCountOrderCompleted();
+        return ResponseEntity.ok(countOrders);
+    }
+    @GetMapping("/api/admin/count/orders-returned")
+    public ResponseEntity<Object> getCountOrdersReturned(){
+        long countOrders = orderService.getCountOrderReturned();
+        return ResponseEntity.ok(countOrders);
+    }
+    @GetMapping("/api/admin/count/orders-canceled")
+    public ResponseEntity<Object> getCountOrdersCanceled(){
+        long countOrders = orderService.getCountOrderCanceled();
+        return ResponseEntity.ok(countOrders);
+    }
 
     @GetMapping("/api/admin/count/categories")
     public ResponseEntity<Object> getCountCategories(){

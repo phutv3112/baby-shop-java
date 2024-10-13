@@ -39,7 +39,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query("SELECT COUNT(DISTINCT o.billCode) FROM Order o")
     long countDistinctBillCodes();
-
+    @Query("SELECT COUNT(DISTINCT o.id) FROM Order o where o.status = ?1")
+    long countDistinctOrderStatus(int status);
     @Query(value = "SELECT * FROM orders WHERE bill_code LIKE CONCAT('%',?1,'%')", nativeQuery = true)
     List<Order> findOrdersByBillCode(String billCode);
 
