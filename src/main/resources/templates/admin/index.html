@@ -203,6 +203,80 @@
                     </section>
                 </div>
             </div>
+            <div class="row mb-3">
+                <div class="col-xl-4">
+                    <section class="card card-featured-left card-featured-tertiary mb-3">
+                        <div class="card-body">
+                            <div class="widget-summary">
+                                <div class="widget-summary-col widget-summary-col-icon">
+                                    <div class="summary-icon bg-primary">
+                                        <i class="fas fa-dolly-flatbed"></i>
+                                    </div>
+                                </div>
+                                <div class="widget-summary-col">
+                                    <div class="summary">
+                                        <h4 class="title">Số đơn đang giao</h4>
+                                        <div class="info">
+                                            <strong class="amount" id="order-count-completed"></strong>
+                                        </div>
+                                    </div>
+                                    <div class="summary-footer">
+                                        <a class="text-muted text-uppercase" href="/admin/orders">(Xem chi tiết)</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                <div class="col-xl-4">
+                    <section class="card card-featured-left card-featured-quaternary">
+                        <div class="card-body">
+                            <div class="widget-summary">
+                                <div class="widget-summary-col widget-summary-col-icon">
+                                    <div class="summary-icon bg-success">
+                                        <i class="fas fa-check-double"></i>
+                                    </div>
+                                </div>
+                                <div class="widget-summary-col">
+                                    <div class="summary">
+                                        <h4 class="title">Số lượng đơn giao thành công</h4>
+                                        <div class="info">
+                                            <strong class="amount" id="order-count-returned"></strong>
+                                        </div>
+                                    </div>
+                                    <div class="summary-footer">
+                                        <a class="text-muted text-uppercase" href="/admin/brands">(Xem chi tiết)</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                <div class="col-xl-4">
+                    <section class="card card-featured-left card-featured-tertiary mb-3">
+                        <div class="card-body">
+                            <div class="widget-summary">
+                                <div class="widget-summary-col widget-summary-col-icon">
+                                    <div class="summary-icon bg-danger">
+                                        <i class="fas fa-ban"></i>
+                                    </div>
+                                </div>
+                                <div class="widget-summary-col">
+                                    <div class="summary">
+                                        <h4 class="title">Số lượng đơn bị hủy</h4>
+                                        <div class="info">
+                                            <strong class="amount" id="order-count-canceled"></strong>
+                                        </div>
+                                    </div>
+                                    <div class="summary-footer">
+                                        <a class="text-muted text-uppercase" href="/admin/users">(Xem chi tiết)</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
         </div>
     </div>
     <div class="row pt-4">
@@ -492,6 +566,9 @@
             getCountPost();
             getCountBrands();
             getCountUsers();
+            getCountOrderReturned();
+            getCountOrderCanceled();
+            getCountOrderCompleted();
         }
 
         function getCountUsers() {
@@ -545,7 +622,42 @@
                 }
             })
         }
-
+        function getCountOrderCompleted() {
+            $.ajax({
+                url: '/api/admin/count/orders-completed',
+                type: 'GET',
+                contentType: 'application/json',
+                success: function (data) {
+                    $('#order-count-completed').append(`
+                        <strong>${data}</strong>
+                    `)
+                }
+            })
+        }
+        function getCountOrderReturned() {
+            $.ajax({
+                url: '/api/admin/count/orders-returned',
+                type: 'GET',
+                contentType: 'application/json',
+                success: function (data) {
+                    $('#order-count-returned').append(`
+                        <strong>${data}</strong>
+                    `)
+                }
+            })
+        }
+        function getCountOrderCanceled() {
+            $.ajax({
+                url: '/api/admin/count/orders-canceled',
+                type: 'GET',
+                contentType: 'application/json',
+                success: function (data) {
+                    $('#order-count-canceled').append(`
+                        <strong>${data}</strong>
+                    `)
+                }
+            })
+        }
         function getCountPost() {
             $.ajax({
                 url: '/api/admin/count/posts',

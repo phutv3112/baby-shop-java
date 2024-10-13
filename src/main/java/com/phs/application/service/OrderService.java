@@ -34,9 +34,12 @@ public interface OrderService {
 
     //Đếm số lượng đơn hàng
     long getCountOrder();
-
+    long getCountOrderCompleted();
+    long getCountOrderReturned();
+    long getCountOrderCanceled();
     List<Number> createOrderV2(CreateOrderRequestV2 createOrderRequest, long id);
 
     List<Order> findOrdersByBillCode(String billCode);
     void changeOrderPaymentStatus(long orderId);
+
 }

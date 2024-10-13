@@ -499,6 +499,18 @@ public void updateStatusOrderV2(String billCode, int status) {
     public long getCountOrder() {
         return orderRepository.countDistinctBillCodes();
     }
+    @Override
+    public long getCountOrderCompleted() {
+        return orderRepository.countDistinctOrderStatus(3);
+    }
+    @Override
+    public long getCountOrderReturned() {
+        return orderRepository.countDistinctOrderStatus(4);
+    }
+    @Override
+    public long getCountOrderCanceled() {
+        return orderRepository.countDistinctOrderStatus(5);
+    }
 
     @Transactional
     @Override
@@ -539,6 +551,7 @@ public void updateStatusOrderV2(String billCode, int status) {
             order.setProductIds(productSize.getProductId());
             order.setBillCode(uuid);
             order.setSize(proId.getSize());
+            order.setHasPaid(false);
             KeyHolder keyHolder = new GeneratedKeyHolder();
             orderRepositoryImpl.save(order, keyHolder);
             Number id = keyHolder.getKey();

@@ -185,6 +185,12 @@ public class HomeController {
     public ResponseEntity<Object> getOrderOfShipperByStatus(@RequestParam(name = "status", required = false) Integer status, @RequestParam(name = "shipper_id", required = false) Long shipper_id){
         return ResponseEntity.ok(orderService.getListOrderOfShipperByStatus(status,shipper_id));
     }
+
+    @GetMapping("/api/shippers/orders/update-payment")
+    public ResponseEntity<Object> updatePaymentOrder(@RequestParam(name = "status", required = false) long orderId){
+        orderService.changeOrderPaymentStatus(orderId);
+        return ResponseEntity.ok(true);
+    }
     @GetMapping("/api/orders")
     public ResponseEntity<Object> getOrder(@RequestParam(name = "status", required = false) Integer status, @RequestParam(name = "buyer", required = false) Long buyer) {
         return ResponseEntity.ok(orderServiceImpl.getSummary(buyer, status));

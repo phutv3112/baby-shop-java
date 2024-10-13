@@ -81,4 +81,11 @@ public class ShipperController {
 
         return "redirect:/admin/shippers";
     }
+    @GetMapping("/admin/shipper/location/{id}")
+    public String locationShipper(
+            @PathVariable("id") Long id, Model model) {
+
+        model.addAttribute("shipperId", id);
+        return  "admin/shipper/location";
+    }
 }
