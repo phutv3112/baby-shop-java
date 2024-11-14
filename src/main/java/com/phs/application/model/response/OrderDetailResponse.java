@@ -6,7 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class OrderDetailResponse {
-
+    private int id;
     private String billCode;
     private long prices;
     private String receiverName;

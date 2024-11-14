@@ -11,6 +11,7 @@ public class OrderDetailMapper implements RowMapper<OrderDetailResponse> {
     @Override
     public OrderDetailResponse mapRow(ResultSet resultSet, int i) throws SQLException {
         OrderDetailResponse order = new OrderDetailResponse();
+        order.setId(resultSet.getInt("orders.id"));
         order.setReceiverAddress(resultSet.getString("receiver_address"));
         order.setNote(resultSet.getString("note"));
         order.setReceiverName(resultSet.getString("receiver_name"));
