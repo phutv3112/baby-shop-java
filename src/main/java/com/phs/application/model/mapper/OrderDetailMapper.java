@@ -21,6 +21,7 @@ public class OrderDetailMapper implements RowMapper<OrderDetailResponse> {
 //        order.setCreatedAt(resultSet.getTimestamp("created_at"));
         order.setBillCode(resultSet.getString("bill_code"));
         order.setProductId(resultSet.getString("product_id"));
+        order.setHasPaid(resultSet.getBoolean("has_paid"));
         return order;
     }
 }

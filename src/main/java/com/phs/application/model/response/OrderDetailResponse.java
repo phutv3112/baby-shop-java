@@ -15,4 +15,5 @@ public class OrderDetailResponse {
     private int quantity;
     private String note;
     private String productId;
+    private boolean hasPaid;
 }
