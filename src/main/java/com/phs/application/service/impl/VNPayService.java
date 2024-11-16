@@ -3,6 +3,8 @@ package com.phs.application.service.impl;
 import com.phs.application.config.VNPayConfig;
 import com.phs.application.entity.Order;
 import com.phs.application.model.dto.PaymentDTO;
+import com.phs.application.model.response.OrderDetailResponse;
+import com.phs.application.model.response.OrderResponse;
 import com.phs.application.repository.OrderRepository;
 import com.phs.application.repository.OrderRepositoryImpl;
 import com.phs.application.utils.VNPayUtil;
@@ -10,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -17,14 +20,18 @@ import java.util.Map;
 public class VNPayService {
     private final VNPayConfig vnpayConfig;
     private final OrderRepository orderRepository;
-
+    private final OrderRepositoryImpl orderRepositoryImpl;
     public PaymentDTO.VNPayResponse createVnPayPayment(HttpServletRequest request) {
 
-        long orderId=Integer.parseInt(request.getParameter("orderId"));
-        Order order = orderRepository.findById(orderId).get();
-        long amount =order.getTotalPrice() * 100L;
+        String billCode=request.getParameter("billCode");
+        List<OrderDetailResponse> order = orderRepositoryImpl.getDetail(billCode);
+        long amount =0 ;
+        for(OrderDetailResponse orderItem : order){
+            amount+=orderItem.getPrices();
+        }
+        amount*=100d;
         String bankCode = request.getParameter("bankCode");
-        Map<String, String> vnpParamsMap = vnpayConfig.getVNPayConfig(orderId);
+        Map<String, String> vnpParamsMap = vnpayConfig.getVNPayConfig(billCode);
         vnpParamsMap.put("vnp_Amount", String.valueOf(amount));
         if (bankCode != null && !bankCode.isEmpty()) {
             vnpParamsMap.put("vnp_BankCode", bankCode);
