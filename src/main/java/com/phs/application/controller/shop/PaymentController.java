@@ -26,8 +26,8 @@ public class PaymentController {
     }
     @GetMapping("/vn-pay-callback")
     public String payCallbackHandler(HttpServletRequest  request) {
-        long orderId=Long.parseLong(request.getParameter("vnp_OrderInfo"));
-        orderService.changeOrderPaymentStatus(orderId);
+        String billCode=request.getParameter("vnp_OrderInfo");
+        orderService.changeOrderPaymentStatus(billCode);
         return "Thanh toán thành công";
     }
 }

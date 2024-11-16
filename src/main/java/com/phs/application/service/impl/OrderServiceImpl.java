@@ -625,7 +625,24 @@ public void updateStatusOrderV2(String billCode, int status) {
         return orderRepository.findOrdersByBillCode(billCode);
     }
     @Override
-    public void changeOrderPaymentStatus(long orderId){
+    public void changeOrderPaymentStatus(String billCode){
+
+        List<Order> listOrder= orderRepository.findByBillCodePayment(billCode);
+        if (listOrder == null || listOrder.isEmpty()) {
+            throw new NotFoundException("Không tìm thấy đơn hàng nào với mã bill: " + billCode);
+        }
+
+        // Duyệt qua danh sách và cập nhật trạng thái hasPaid = true cho từng đơn hàng
+        for (Order order : listOrder) {
+            order.setHasPaid(true);
+        }
+
+        // Lưu danh sách các đơn hàng đã cập nhật
+        orderRepository.saveAll(listOrder);
+    }
+    @Override
+    public void changeOrderPaymentStatusShipper(long orderId){
+
         Optional<Order> rs = orderRepository.findById(orderId);
         if (rs.isEmpty()) {
             throw new NotFoundException("Đơn hàng không tồn tại");

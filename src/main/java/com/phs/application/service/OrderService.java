@@ -40,6 +40,6 @@ public interface OrderService {
     List<Number> createOrderV2(CreateOrderRequestV2 createOrderRequest, long id);
 
     List<Order> findOrdersByBillCode(String billCode);
-    void changeOrderPaymentStatus(long orderId);
-
+    void changeOrderPaymentStatus(String billCode);
+    void changeOrderPaymentStatusShipper(long orderId);
 }
