@@ -627,7 +627,7 @@ public void updateStatusOrderV2(String billCode, int status) {
     @Override
     public void changeOrderPaymentStatus(String billCode){
 
-        List<Order> listOrder= orderRepository.findByBillCodePayment(billCode);
+        List<Order> listOrder= orderRepository.findOrdersByBillCode(billCode);
         if (listOrder == null || listOrder.isEmpty()) {
             throw new NotFoundException("Không tìm thấy đơn hàng nào với mã bill: " + billCode);
         }

@@ -35,8 +35,12 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query(nativeQuery = true, value = "SELECT id FROM orders WHERE bill_code = ?1")
     List<Long> findByBillCode(String billCode);
-    @Query(nativeQuery = true, value = "SELECT bill_code, total_price,quantity FROM orders o JOIN product p on o.product p ON o.product_id=p.id WHERE bill_code = ?1")
-    List<Order> findByBillCodePayment(String billCode);
+
+
+//    @Query(nativeQuery = true, value = "SELECT bill_code, total_price,quantity FROM orders o JOIN product p  ON o.product_id=p.id WHERE bill_code = ?1")
+//    List<Order> findByBillCodePayment(String billCode);
+
+
     int countByProductId(String id);
 
     @Query("SELECT COUNT(DISTINCT o.billCode) FROM Order o")
