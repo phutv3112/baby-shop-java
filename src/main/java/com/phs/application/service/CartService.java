@@ -71,34 +71,6 @@ public class CartService {
                 "SUCCESS"            // Thông điệp
         );
     }
-
-
-    //    public List<CartResponse> getCartByUserId(Long userId) {
-//        List<Cart> cartItems = cartItemRepository.findByUserId(userId);
-//        User user = userRepository.findById(userId)
-//                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
-//
-//        List<CartResponse> cartResponses = new ArrayList<>();
-//        for (Cart cartItem : cartItems) {
-//            Product product = cartItem.getProduct();
-//            CartResponse response = new CartResponse(
-//                    cartItem.getId(),
-//                    userId,
-//                    product.getId(),
-//                    cartItem.getQuantity(),
-//                    product.getName(),
-//                    product.getPrice(),
-//                    product.getSalePrice(),
-//                    product.getTotalSold(),
-//                    product.getStatus(),
-//                    product.getImages(),
-//                    "OK",
-//                    "SUCCESS"
-//            );
-//            cartResponses.add(response);
-//        }
-//        return cartResponses;
-//    }
 public CartResponse getCartByUserId(Long userId) {
     List<Cart> cartItems = cartItemRepository.findByUserId(userId);
     User user = userRepository.findById(userId)
@@ -112,7 +84,7 @@ public CartResponse getCartByUserId(Long userId) {
                 product.getId(),
                 product.getName(),
                 product.getSlug(),
-                product.getPrice(),
+                product.getSalePrice(),
                 cartItem.getQuantity(),
                 product.getImages(),
                 product.getTotalSold(),
