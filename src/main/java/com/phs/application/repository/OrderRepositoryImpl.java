@@ -121,7 +121,7 @@ public class OrderRepositoryImpl  {
     }
 
     public List<OrderDetailResponse> getDetail(String billCode) {
-        StringBuilder sql = new StringBuilder("select orders.id,receiver_address, receiver_name,product_id, receiver_phone, quantity, product.price * orders.quantity as prices, bill_code , note\n" +
+        StringBuilder sql = new StringBuilder("select orders.id,receiver_address, receiver_name,product_id, receiver_phone, quantity, product.sale_price * orders.quantity as prices, bill_code , note\n" +
                 "from orders\n" +
                 "         inner join product ON orders.product_id = product.id\n" +
                 "where bill_code = :billCode");
