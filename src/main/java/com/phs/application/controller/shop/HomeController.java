@@ -187,7 +187,7 @@ public class HomeController {
     }
 
     @GetMapping("/api/shippers/orders/update-payment")
-    public ResponseEntity<Object> updatePaymentOrder(@RequestParam(name = "status", required = false) long orderId){
+    public ResponseEntity<Object> updatePaymentOrder(@RequestParam(name = "orderId", required = false) long orderId){
         orderService.changeOrderPaymentStatusShipper(orderId);
         return ResponseEntity.ok(true);
     }
